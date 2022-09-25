@@ -1,0 +1,122 @@
+* {
+    box-sizing: border-box;
+    margin:0;
+  }
+body {
+    font-family: "Arial", sans-serif !important ;
+    background: rgb(255, 255, 255);
+    font-size: 8pt !important;
+    line-height: 1.20 !important;
+    color: #1e1e1e;
+    font-weight: normal;
+    /* border-bottom: 1px solid rgba(0, 0, 0, 0.5); */
+    /* padding: 2cm; */
+}
+html {
+    margin:1cm, 1.5cm;
+}
+table {
+    border-collapse: collapse;
+    width: 100%;
+    border-spacing: 0;
+}
+th {
+    background-color: #dfe3e8;
+    text-align: center;
+    font-size: 8pt !important;
+    vertical-align: middle !important;
+}
+td,
+th {
+    border: 1px solid #bec2c6;
+    padding: 1px 5px !important;
+}
+.disclaimer{
+    font-size: 8pt !important;
+    text-align: center;
+    padding: 8px !important;
+}
+.cell-title {
+    background-color: #f2f4f7;
+    color: #1e1e1e;
+    padding: 1px 3px;
+}
+.text-center {
+    text-align: center !important;
+}
+.mt-1 {
+    margin-top: 8px;
+}
+.mt-2 {
+    margin-top: 16px;
+}
+.mb-2 {
+    margin-bottom: 16px;
+}
+.no-border {
+    border: none !important;
+}
+.m-1 {
+    margin: 5px;
+}
+.rotate {
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    width: 1.5em;
+}
+.rotate div {
+    -moz-transform: rotate(-90deg);
+    /* FF3.5+ */
+    -o-transform: rotate(-90deg);
+    /* Opera 10.5 */
+    -webkit-transform: rotate(-90deg);
+    /* Saf3.1+, Chrome */
+    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=0.083);
+    /* IE6,IE7 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=0.083)";
+    /* IE8 */
+    margin-left: -10em;
+    margin-right: -10em;
+}
+.text-right {
+    text-align: right !important;
+}
+.text-left {
+    text-align: left !important;
+}
+.p-1 {
+    padding: 5px !important;
+}
+.p-15 {
+    padding:2px 5px !important;
+}
+/* Create two equal columns that floats next to each other */
+.column {
+    float: left;
+    width: 50%;
+    padding: 10px;
+}
+/* Clear floats after the columns */
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+.titulo {
+	text-align: center;
+	font-weight: bold;
+}
+.uderline {
+	text-decoration: underline;
+}
+.just {
+	text-align: justify;
+}
+.font-bold{
+    font-weight: bold;
+}
+span{
+    background-color: white !important;
+    color: red !important;
+}
