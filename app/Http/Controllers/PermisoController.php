@@ -1,11 +1,10 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Models\Permiso;
+use App\Http\Requests\PermisoStoreRequest;
 use Illuminate\Http\Request;
+use Spatie\Permission\Models\Permission;
 use Validator;
-use Illuminate\Support\Facades\Auth;
-use Tymon\JWTAuth\Facades\JWTAuth;
 
 class PermisoController extends Controller {
 
@@ -15,7 +14,7 @@ class PermisoController extends Controller {
 
 	public function index() {
 		try {
-			$result = Permiso::all();
+			$result = Permission::all();
 			if (!$result->isEmpty()) {
 				return response()->json([
 					'success' => true,
@@ -34,26 +33,16 @@ class PermisoController extends Controller {
 			], 404);
 		}
 	}
-	public function store(Request $request) {
+
+	public function store(PermisoStoreRequest $request) {
 		try {
-			$validator = Validator::make($request->all(), [
-				'name'        => 'required|unique:permissions',
-				'descripcion' => 'required',
-			]);
-			if ($validator->fails()) {
-				return response()->json([
-					'success'   => false,
-					'validator' => $validator->errors()->all(),
-				], 400);
-			} else {
-				Permiso::create(array_merge(
-					$validator->validated()
-				));
-				return response()->json([
-					'success' => true,
-					'message' => 'Permiso registrado correctamente',
-				], 201);
-			}
+			Permission::create(array_merge(
+				$validator->validated()
+			));
+			return response()->json([
+				'success' => true,
+				'message' => 'Permiso registrado correctamente',
+			], 201);
 		} catch (\Exception $ex) {
 			return response()->json([
 				'success' => false,
@@ -63,7 +52,7 @@ class PermisoController extends Controller {
 	}
 	public function show($id) {
 		try {
-			$result = Permiso::find($id);
+			$result = Permission::find($id);
 			if ($result) {
 				return response()->json([
 					'success' => true,
@@ -101,7 +90,7 @@ class PermisoController extends Controller {
 					'guard_name'  => $request['guard_name'],
 					'descripcion' => $request['descripcion'],
 				];
-				Permiso::where('id', '=', $id)->update($res_rol);
+				Permission::where('id', '=', $id)->update($res_rol);
 				return response()->json([
 					'success' => true,
 					'message' => 'Permiso Actualizado correctamente',
@@ -116,7 +105,7 @@ class PermisoController extends Controller {
 	}
 	public function destroy($id) {
 		try {
-			$permiso = Permiso::find($id);
+			$permiso = Permission::find($id);
 			if (empty($permiso)) {
 				return response()->json([
 					'success' => false,

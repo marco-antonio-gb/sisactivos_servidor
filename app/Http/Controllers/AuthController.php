@@ -23,8 +23,8 @@ class AuthController extends Controller {
 	public function login() {
 		$credentials = request(['username', 'password']);
 		if (Usuario::where('username', '=', $credentials['username'])->exists()) {
-			$verificarEstado = Usuario::select('condicion')->where('username', '=', $credentials['username'])->get()->first();
-			if (!$verificarEstado['condicion']) {
+			$verificarEstado = Usuario::select('estado')->where('username', '=', $credentials['username'])->get()->first();
+			if (!$verificarEstado['estado']) {
 				return response()->json([
 					'success' => false,
 					'message' => 'La cuenta esta suspendida',

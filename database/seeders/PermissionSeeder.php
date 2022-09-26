@@ -15,44 +15,23 @@ class PermissionSeeder extends Seeder {
 	 */
 	public function run() {
 		$permissions = [
-			'usuario-list',
-			'usuario-create',
-			'usuario-update',
-			'usuario-delete',
-			'usuario-lock',
-			#--------------
-			'rol-list',
-			'rol-create',
-			'rol-update',
-			'rol-delete',
-			#--------------
-			'permiso-list',
-			'permiso-create',
-			'permiso-update',
-			'permiso-delete',
-			#--------------
-			'asignar-rol',
-			'asignar-permiso',
-			#--------------
-			'paciente-create',
-			'paciente-update',
-			'paciente-list',
-			'paciente-delete',
-            #--------------
-			'persona-create',
-			'persona-update',
-			'persona-list',
-			'persona-delete',
-            #--------------
-			'historial-create',
-			'historial-delete',
-			'historial-update',
-			'historial-list',
-
-			'medico-create',
-			'medico-list',
-			'medico-update',
-			'medico-delete',
+			'escritorio',
+            'almacen-create',
+            'almacen-read',
+            'almacen-update',
+            'almacen-delete',
+            
+            'asignacion-create',
+            'asignacion-read',
+            'asignacion-update',
+            'asignacion-delete',
+            
+            'transferencia-create',
+            'transferencia-read',
+            'transferencia-update',
+            'transferencia-delete',
+            
+            
 		];
 
 		foreach ($permissions as $permission) {

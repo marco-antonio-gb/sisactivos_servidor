@@ -11,12 +11,10 @@ class RolController extends Controller {
 			$result = Role::all();
 			if (!$result->isEmpty()) {
 				return response()->json([
-					'data'        => $result,
 					'success'     => true,
-					'total'       => count($result),
-					'message'     => 'Lista de roles',
-					'status_code' => 200,
-				]);
+					'data'        => $result,
+					
+				],200);
 			} else {
 				return [
 					'success'     => false,
@@ -43,8 +41,7 @@ class RolController extends Controller {
 				return response()->json([
 					'success'     => false,
 					'validator'   => $validator->errors()->all(),
-					'status_code' => 400,
-				]);
+				],400);
 			} else {
 				$newRole = Role::create(array_merge(
 					$validator->validated()
@@ -52,9 +49,7 @@ class RolController extends Controller {
 				$newRole->syncPermissions($permisos);
 				return response()->json([
 					'success'     => true,
-					'message'     => 'Rol registrado correctamente',
-					'status_code' => 201,
-					'datos'       => $request['permisos'],
+					'data'       => $request['permisos'],
 				], 201);
 			}
 		} catch (\Exception $ex) {
@@ -66,20 +61,19 @@ class RolController extends Controller {
 	}
 	public function show($id) {
 		try {
-			$roles = Rol::where('id', '=', $id)
-				->with(array('permisos' => function ($query) {$query->select('id', 'name', 'descripcion');}))
-				->first();
+			 $roles=Role::find($id);
+             $roles->permissions->pluck('name');
+
 			if ($roles) {
 				return response()->json([
 					'success' => true,
 					'data'    => $roles,
 				], 200);
 			} else {
-				return [
-					'success'     => false,
+				 return response()->json([
+                    'success'     => false,
 					'message'     => 'No se encontro ningun registro',
-					'status_code' => 204,
-				];
+                 ],201);
 			}
 		} catch (\Exception $ex) {
 			return response()->json([
@@ -97,9 +91,8 @@ class RolController extends Controller {
 			if ($validator->fails()) {
 				return response()->json([
 					'success'     => false,
-					'validator'   => $validator->errors()->all(),
-					'status_code' => 400,
-				]);
+					'validator'   => $validator->errors()->all()
+				],400);
 			} else {
 				$res_rol = [
 					'name'        => $request['name'],
