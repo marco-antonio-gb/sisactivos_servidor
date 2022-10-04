@@ -1,146 +1,8 @@
 <?php
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
-class NumeroLetras
-{
-    private static $UNIDADES = [
-        '',
-        'UN ',
-        'DOS ',
-        'TRES ',
-        'CUATRO ',
-        'CINCO ',
-        'SEIS ',
-        'SIETE ',
-        'OCHO ',
-        'NUEVE ',
-        'DIEZ ',
-        'ONCE ',
-        'DOCE ',
-        'TRECE ',
-        'CATORCE ',
-        'QUINCE ',
-        'DIECISEIS ',
-        'DIECISIETE ',
-        'DIECIOCHO ',
-        'DIECINUEVE ',
-        'VEINTE ',
-    ];
-    private static $DECENAS = [
-        'VENTI',
-        'TREINTA ',
-        'CUARENTA ',
-        'CINCUENTA ',
-        'SESENTA ',
-        'SETENTA ',
-        'OCHENTA ',
-        'NOVENTA ',
-        'CIEN ',
-    ];
-    private static $CENTENAS = [
-        'CIENTO ',
-        'DOSCIENTOS ',
-        'TRESCIENTOS ',
-        'CUATROCIENTOS ',
-        'QUINIENTOS ',
-        'SEISCIENTOS ',
-        'SETECIENTOS ',
-        'OCHOCIENTOS ',
-        'NOVECIENTOS ',
-    ];
-    public static function convertir($number, $currency = '', $format = false, $decimals = '')
-    {
-        $base_number = $number;
-        $converted   = '';
-        $decimales   = '';
-        if (($base_number < 0) || ($base_number > 999999999)) {
-            return 'No es posible convertir el numero en letras';
-        }
-        $div_decimales = explode('.', $base_number);
-        if (count($div_decimales) > 1) {
-            $base_number  = $div_decimales[0];
-            $decNumberStr = (string) $div_decimales[1];
-            if (strlen($decNumberStr) == 2) {
-                $decNumberStrFill = str_pad($decNumberStr, 9, '0', STR_PAD_LEFT);
-                $decCientos       = substr($decNumberStrFill, 6);
-                $decimales        = self::convertGroup($decCientos);
-            }
-        }
-        $numberStr     = (string) $base_number;
-        $numberStrFill = str_pad($numberStr, 9, '0', STR_PAD_LEFT);
-        $millones      = substr($numberStrFill, 0, 3);
-        $miles         = substr($numberStrFill, 3, 3);
-        $cientos       = substr($numberStrFill, 6);
-        if (intval($millones) > 0) {
-            if ($millones == '001') {
-                $converted .= 'UN MILLON ';
-            } else if (intval($millones) > 0) {
-                $converted .= sprintf('%sMILLONES ', self::convertGroup($millones));
-            }
-        }
-        if (intval($miles) > 0) {
-            if ($miles == '001') {
-                $converted .= 'MIL ';
-            } else if (intval($miles) > 0) {
-                $converted .= sprintf('%sMIL ', self::convertGroup($miles));
-            }
-        }
-        if (intval($cientos) > 0) {
-            if ($cientos == '001') {
-                $converted .= 'UN ';
-            } else if (intval($cientos) > 0) {
-                $converted .= sprintf('%s ', self::convertGroup($cientos));
-            }
-        }
-        if ($format) {
-            if (empty($decimales)) {
-                $valor_convertido =  ' (' . ucfirst($converted) . '00/100 ' . $currency . ')';
-            } else {
-                $valor_convertido =  ' (' . ucfirst($converted) . $decNumberStr . '/100 ' . $currency . ')';
-            }
-        } else {
-            if (empty($decimales)) {
-                $valor_convertido = ucfirst($converted) . $currency;
-            } else {
-                $valor_convertido = ucfirst($converted) . $currency . ' CON ' . $decimales . $decimals;
-            }
-        }
-        # OLD: RETORNA EL NUMERO CON EL LITERAL EN UNA LINEA
-        // if ($format) {
-        // 	if (empty($decimales)) {
-        // 		$valor_convertido = number_format($number, 2, ',', '.') . ' (' . ucfirst($converted) . '00/100 ' . $currency . ')';
-        // 	} else {
-        // 		$valor_convertido = number_format($number, 2, ',', '.') . ' (' . ucfirst($converted) . $decNumberStr . '/100 ' . $currency . ')';
-        // 	}
-        // } else {
-        // 	if (empty($decimales)) {
-        // 		$valor_convertido = ucfirst($converted) . $currency;
-        // 	} else {
-        // 		$valor_convertido = ucfirst($converted) . $currency . ' CON ' . $decimales . $decimals;
-        // 	}
-        // }
-        return $valor_convertido;
-    }
-    private static function convertGroup($n)
-    {
-        $output = '';
-        if ($n == '100') {
-            $output = "CIEN ";
-        } else if ($n[0] !== '0') {
-            $output = self::$CENTENAS[$n[0] - 1];
-        }
-        $k = intval(substr($n, 1));
-        if ($k <= 20) {
-            $output .= self::$UNIDADES[$k];
-        } else {
-            if (($k > 30) && ($n[2] !== '0')) {
-                $output .= sprintf('%sY %s', self::$DECENAS[intval($n[1]) - 2], self::$UNIDADES[intval($n[2])]);
-            } else {
-                $output .= sprintf('%s%s', self::$DECENAS[intval($n[1]) - 2], self::$UNIDADES[intval($n[2])]);
-            }
-        }
-        return $output;
-    }
-}
+use Intervention\Image\Facades\Image;
+ 
 function slugify($text, string $divider = '-')
 {
     // replace non letter or digits by divider
@@ -213,4 +75,77 @@ function deleteDirecrotory($sub_folder, $root_folder) {
    } catch (\Throwable $th) {
        return false;
    }
+}
+
+function SKU_gen($string){
+    
+    $results = $string!=null ? $string : "0";
+    if(preg_match_all('/\b(\w)/',strtoupper($string),$m)) {
+        $results = implode('',$m[1]); // $v is now SOQTU
+    }
+    return substr($results,0,1);
+}
+function getcolorAvatar($name) {
+    $acro = substr($name, 0,5);
+    $colors = [
+        "#F44336",
+        "#E91E63",
+        "#9C27B0",
+        "#673AB7",
+        "#3F51B5",
+        "#2196F3",
+        "#03A9F4",
+        "#00BCD4",
+        "#009688",
+        "#4CAF50",
+        "#8BC34A",
+        "#FFC107",
+        "#FF9800",
+        "#FF5722",
+        "#4527A0",
+        "#01579B",
+        "#B71C1C",
+        "#880E4F",
+        "#283593",
+        "#1565C0",
+        "#0277BD",
+        "#4A148C",
+        "#00796B",
+        "#2E7D32",
+        "#558B2F",
+        "#FF6F00", 
+    ];
+    $sum = 0;
+    for($j=0; $j<strlen($acro); $j++){
+        $sum+=ord($acro);
+    }
+    $ascii = $sum;
+    $colortest = $ascii%26;
+    return  $colors[$colortest];
+}
+#@Params:  Imagen, Carpeta destino
+function storeImage($imagen, $folder) {
+    $result = null;
+    try {
+        if ($imagen) {
+            #Generar codigo UUID
+            $randomString = Str::uuid();
+            #Creando una imagen codificado en JPG
+            $image = Image::make($imagen)->encode('jpg');
+            #directorio para imagenes originales
+            $originalPath = '/' . $folder . '/';
+            #Redimencionando imagenes a 600x600
+            $image->fit(500, 500, function ($constraint) {
+                $constraint->upsize();
+                $constraint->aspectRatio();
+            });
+            $result = $randomString . '.jpg';
+            #Almacenar imagen en carpeta con tamano Original
+            $image->save(public_path() . $originalPath . $result);
+            $image->destroy();
+        }
+    } catch (\Exception $th) {
+        $result = $th->getMessage();
+    }
+    return $result;
 }

@@ -12,12 +12,12 @@ class UsuarioStoreRequest extends FormRequest {
 			'paterno'   => 'required|string|between:2,100',
 			'materno'   => 'required|string|between:2,100',
 			'nombres'   => 'required|string|between:2,100',
-			'direccion' => 'required|string|max:20',
+			'direccion' => 'required|string|max:50',
 			'ci'        => 'required|string|max:9|unique:usuarios',
 			'ci_ext'    => 'required|string|max:9',
-			'cargo'     => 'required|string|between:2,30',
+			'cargo'     => 'required|string|between:2,50',
 			'correo'    => 'required|string|email|max:100|unique:usuarios',
-			'telefono'  => 'required|string|max:5|unique:usuarios',
+			'telefono'  => 'required|string|max:10|unique:usuarios',
 			'username'  => 'required|string|max:25|unique:usuarios',
 			'password'  => 'required|string|max:25',
             'roles'     => 'required',
@@ -45,11 +45,31 @@ class UsuarioStoreRequest extends FormRequest {
 			// 'fec_nac.before'   => 'La fecha de Nacimiento es incorrecta',
 		];
 	}
+    protected function prepareForValidation()
+        {
+            $datos = json_decode($this->request->get('data'), true);
+            $this->merge([
+                'paterno'   => $datos['paterno'],
+                'materno'   => $datos['materno'],
+                'nombres'   => $datos['nombres'],
+                'direccion' => $datos['direccion'],
+                'ci'        => $datos['ci'],
+                'ci_ext'    => $datos['ci_ext'],
+                'cargo'     => $datos['cargo'],
+                'correo'    => $datos['correo'],
+                'telefono'  => $datos['telefono'],
+                'username'  => $datos['username'],
+                'password'  => $datos['password'],
+                'roles'     => $datos['roles'],
+                'permisos'  => $datos['permisos'],
+            ]);
+        }
+
 	protected function failedValidation(Validator $validator) {
 		$erros = $validator->errors()->toArray();
 		throw new HttpResponseException(response()->json([
 			'success' => false,
 			'errors'  => array_merge(...array_values($erros)),
-		], 422));
+		], 200));
 	}
 }
