@@ -27,7 +27,7 @@ class UsuarioController extends Controller {
 				return response()->json([
 					'success' => false,
 					'message' => 'No existen resultados',
-				], 204);
+				], 200);
 			}
 		} catch (\Exception $ex) {
 			return response()->json([
@@ -55,7 +55,7 @@ class UsuarioController extends Controller {
 				'cargo'     => $datos['cargo'],
 				'correo'    => $datos['correo'],
 				'foto'      => $imageName,
-				"username"  => $datos['username'],
+
 				"password"  => bcrypt($datos['password']),
 			];
 			$user = Usuario::create($usuario);
@@ -210,22 +210,7 @@ class UsuarioController extends Controller {
 			], 404);
 		}
 	}
-	// public function ReiniciarClave(Request $request) {
-	// 	try {
-	// 		$hashed_random_password = generateStrongPassword(15, false, 'luds');
-	// 		Usuario::where('idUsuario', '=', $request['userId'])->update(['password' => Hash::make($hashed_random_password)]);
-	// 		return response()->json([
-	// 			'success'     => true,
-	// 			'message'     => "La contraseña se restablecio",
-	// 			'newPassword' => $hashed_random_password,
-	// 		], 201);
-	// 	} catch (\Exception $ex) {
-	// 		return response()->json([
-	// 			'success' => false,
-	// 			'error'   => $ex->getMessage(),
-	// 		], 404);
-	// 	}
-	// }
+
 	public function SuspendAccount(Request $request) {
 		try {
 			$usuario_id = $request['usuario_id'];
@@ -286,6 +271,7 @@ class UsuarioController extends Controller {
 	}
 	# Cambiar imagen actual del usuario o establecer una nueva imagen
 	public function ChangeUserPicture(UsuarioPictureRequest $request) {
+
 		try {
 			DB::beginTransaction();
 			$usuario_id   = $request->usuario_id;

@@ -19,7 +19,7 @@ class Usuario extends Authenticatable implements JWTSubject {
 	Protected $guard_name = 'api'; // added
 	protected $primaryKey = 'idUsuario';
 	protected $hidden     = array('pivot', 'password', 'remember_token');
-	protected $appends    = ['user_name', 'avatar_letter', 'avatar_color'];
+	protected $appends    = [  'avatar_letter', 'avatar_color'];
 	protected $casts      = ['estado' => 'boolean'];
 	protected $fillable   = [
 		'paterno',
@@ -39,11 +39,7 @@ class Usuario extends Authenticatable implements JWTSubject {
 	protected function serializeDate(DateTimeInterface $date) {
 		return $date->format('Y-m-d H:i:s');
 	}
-	public function getUserNameAttribute() {
-        $name  = $this->nombres!=null ? $this->nombres : "Sin nombre";
 
-		return $name;
-	}
 	public function getAvatarLetterAttribute() {
 		return SKU_gen($this->nombres);
 	}

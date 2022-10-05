@@ -12,13 +12,13 @@ class UsuarioStoreRequest extends FormRequest {
 			'paterno'   => 'required|string|between:2,100',
 			'materno'   => 'required|string|between:2,100',
 			'nombres'   => 'required|string|between:2,100',
-			'direccion' => 'required|string|max:50',
+			'direccion' => 'required|string|max:100',
 			'ci'        => 'required|string|max:9|unique:usuarios',
 			'ci_ext'    => 'required|string|max:9',
 			'cargo'     => 'required|string|between:2,50',
 			'correo'    => 'required|string|email|max:100|unique:usuarios',
 			'telefono'  => 'required|string|max:10|unique:usuarios',
-			'username'  => 'required|string|max:25|unique:usuarios',
+
 			'password'  => 'required|string|max:25',
             'roles'     => 'required',
             'permisos'  => 'required'
@@ -37,7 +37,7 @@ class UsuarioStoreRequest extends FormRequest {
 			'materno.max'       => 'El Apellido paterno debe ser menor que 50 caracteres.',
 			'correo.email'      => 'Ingrese un correo valido',
 			'correo.unique'     => 'El Correo ya existe',
-			'username.unique'   => 'El Nombre de usuario ya existe',
+
 			'ci.required'       => 'El Numero de Cedula ya existe',
 			'ci.unique'         => 'El Numero de Cedula ya existe',
             'roles.required'    => 'Ingrese al menos un Rol',
@@ -58,7 +58,7 @@ class UsuarioStoreRequest extends FormRequest {
                 'cargo'     => $datos['cargo'],
                 'correo'    => $datos['correo'],
                 'telefono'  => $datos['telefono'],
-                'username'  => $datos['username'],
+
                 'password'  => $datos['password'],
                 'roles'     => $datos['roles'],
                 'permisos'  => $datos['permisos'],

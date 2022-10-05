@@ -9,17 +9,17 @@ class LoginRequest extends FormRequest {
 	}
 	public function rules() {
 		return [
-			'username'  => 'required|string|max:25',
-			'password'  => 'required|string|max:25',
+			'correo'  => 'required|email|string|max:35',
+			'password'  => 'required|string|max:35',
 		];
 	}
 	public function messages() {
 		return [
-			'username.required' => 'Ingrese un nombre de usuario valido',
+			'correo.required' => 'Ingrese un correo  valido',
 			'telefono.unique'   => 'El Nombre de usuario ya fue registrado',
 			'telefono.max'      => 'El Nombre de usuario debe tener mas de 5 caracteres',
 			'password.required'  => 'La clave es obligatorio',
-			'password.max'       => 'La clave debe ser menor que 25 caracteres.',
+			'password.max'       => 'La clave debe ser menor que 35 caracteres.',
 		];
 	}
 	protected function failedValidation(Validator $validator) {

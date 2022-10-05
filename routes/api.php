@@ -26,12 +26,21 @@ Route::group(['middleware' => ['jwt.verify', 'cors']], function () {
 	Route::apiResource('permisos', PermisoController::class)->middleware(['role:Administrador']);
 	#Roles
 	Route::apiResource('roles', RolController::class)->middleware(['role:Administrador']);
+	#Servicios
+	Route::apiResource('servicios', ServicioController::class)->middleware(['role:Administrador']);
+	#Responsables
+	Route::apiResource('responsables', ResponsableController::class)->middleware(['role:Administrador']);
+	Route::get('responsable-baja/{id}', 'ResponsableController@bajaResponsable');
+
+    #Asignaciones
+    Route::apiResource('asignaciones',AsignacionController::class)->middleware(['role:Administrador']);
+
 });
 Route::get('/clear-cache', function () {
 	Artisan::call('cache:clear');
 	return "Cache is cleared";
 });
- 
+
 Route::post('forgot-password', 'AuthController@ForgotPassword');
 Route::post('validate-token', 'AuthController@ValidateTokenReset');
 Route::post('set-password-reset', 'AuthController@SetPasswordReset');

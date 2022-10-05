@@ -27,17 +27,22 @@ class AuthController extends Controller {
 	 * @return \Illuminate\Http\JsonResponse
 	 */
 	public function login(LoginRequest $request) {
+
 		try {
-			$credentials = request(['username', 'password']);
-			if (Usuario::where('username', '=', $credentials['username'])->exists()) {
-				$verificarEstado = Usuario::select('estado')->where('username', '=', $credentials['username'])->get()->first();
+			$correo = $request->correo;
+            $password = $request->password;
+            $usuarioExist =Usuario::where('correo','=',$correo)->exists();
+            // return $usuarioExist;
+			if ($usuarioExist) {
+				$verificarEstado = Usuario::select('estado')->where('correo','=',$correo)->first();
+
 				if (!$verificarEstado['estado']) {
 					return response()->json([
 						'success' => false,
 						'message' => 'Esta cuenta ha sido suspendida.',
 					], 201);
 				} else {
-					if (!$token = auth('api')->attempt($credentials)) {
+					if (!$token = auth('api')->attempt($request->all())) {
 						return response()->json([
 							'success' => false,
 							'message' => 'Los datos son inccorrectos',
@@ -53,8 +58,8 @@ class AuthController extends Controller {
 			}
 		} catch (\Exception $ex) {
 			return response()->json([
-				'success'      => true,
-				'access_token' => $ex->getMessage(),
+				'success'      => false,
+				'error' => $ex->getMessage(),
 			], 404);
 		}
 	}
