@@ -2,7 +2,7 @@
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
 use Intervention\Image\Facades\Image;
- 
+
 function slugify($text, string $divider = '-')
 {
     // replace non letter or digits by divider
@@ -67,7 +67,7 @@ function deleteDirecrotory($sub_folder, $root_folder) {
         if(File::isDirectory($root_folder.'/'.$sub_folder)){
             File::deleteDirectory($root_folder.'/'.$sub_folder);
             return true;
-        } 
+        }
     }else{
         return false;
     }
@@ -78,13 +78,14 @@ function deleteDirecrotory($sub_folder, $root_folder) {
 }
 
 function SKU_gen($string){
-    
+
     $results = $string!=null ? $string : "0";
     if(preg_match_all('/\b(\w)/',strtoupper($string),$m)) {
         $results = implode('',$m[1]); // $v is now SOQTU
     }
     return substr($results,0,1);
 }
+
 function getcolorAvatar($name) {
     $acro = substr($name, 0,5);
     $colors = [
@@ -113,7 +114,7 @@ function getcolorAvatar($name) {
         "#00796B",
         "#2E7D32",
         "#558B2F",
-        "#FF6F00", 
+        "#FF6F00",
     ];
     $sum = 0;
     for($j=0; $j<strlen($acro); $j++){
@@ -124,7 +125,7 @@ function getcolorAvatar($name) {
     return  $colors[$colortest];
 }
 #@Params:  Imagen, Carpeta destino
-function storeImage($imagen, $folder) {
+function storeImage($imagen, $folder, $w=500, $h=500) {
     $result = null;
     try {
         if ($imagen) {
@@ -149,3 +150,27 @@ function storeImage($imagen, $folder) {
     }
     return $result;
 }
+function deleteImage($folder, $file) {
+    try {
+        $originalPath = '/' . $folder . '/';
+        $full_path    = public_path() . $originalPath . $file;
+        if (file_exists($full_path)) {
+            unlink($full_path);
+            return [
+                'success' => true,
+                'message' => "El archivo se elimino",
+            ];
+        } else {
+            return [
+                'success' => false,
+                'message' => "El archivo no existe",
+            ];
+        }
+    } catch (\Exception $ex) {
+        return [
+            'success' => false,
+            'message' => $ex->getMessage(),
+        ];
+    }
+}
+

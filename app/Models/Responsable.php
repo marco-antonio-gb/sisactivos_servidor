@@ -9,6 +9,8 @@ use DateTimeInterface;
 class Responsable extends Model
 {
     protected $primaryKey = 'idResponsable';
+    protected $table = "responsables";
+
     protected $fillable = [
         'servicio_id',
         'usuario_id',

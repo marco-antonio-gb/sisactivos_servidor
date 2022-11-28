@@ -18,6 +18,7 @@ class Usuario extends Authenticatable implements JWTSubject {
 	use HasRoles;
 	Protected $guard_name = 'api'; // added
 	protected $primaryKey = 'idUsuario';
+    protected $table = 'usuarios';
 	protected $hidden     = array('pivot', 'password', 'remember_token');
 	protected $appends    = [  'avatar_letter', 'avatar_color'];
 	protected $casts      = ['estado' => 'boolean'];

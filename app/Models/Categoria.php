@@ -2,17 +2,18 @@
 
 namespace App\Models;
 use DateTimeInterface;
-
 use Illuminate\Database\Eloquent\Model;
 
-class Categoria extends Model
-{
-    protected $primaryKey = 'idCategoria';
-	protected $fillable   = [
+class Categoria extends Model {
+	protected $primaryKey = 'idCategoria';
+	protected $casts      = ['condicion' => 'boolean'];
+	protected $table      = 'categorias';
+
+	protected $fillable = [
 		'nombre',
-        'vida_util',
+		'vida_util',
 		'descripcion',
-		'condicion'
+		'condicion',
 	];
 	protected function serializeDate(DateTimeInterface $date) {
 		return $date->format('Y-m-d H:i:s');

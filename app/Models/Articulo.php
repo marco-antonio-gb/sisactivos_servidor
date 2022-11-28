@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Articulo extends Model {
 	protected $primaryKey = 'idArticulo';
+    protected $table = "articulos";
+
 	protected $fillable   = [
 		'codigo',
 		'unidad',

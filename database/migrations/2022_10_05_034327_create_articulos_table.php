@@ -20,7 +20,7 @@ class CreateArticulosTable extends Migration
             $table->string('nombre');
             $table->string('descripcion');
             $table->string('imagen')->nullable();
-            $table->decimal('costo',11,2)->default(0);
+            $table->decimal('costo',11,2)->default(0.00);
             $table->string('estado');
             $table->boolean('condicion')->default(true);
             $table->timestampTz('fecha_registro')->default(DB::raw('CURRENT_TIMESTAMP'));

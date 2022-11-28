@@ -5,6 +5,8 @@ use DateTimeInterface;
 class Servicio extends Model
 {
     protected $primaryKey = 'idServicio';
+    protected $table = "servicios";
+
     protected $fillable = [
         'nombre',
         'codigo',

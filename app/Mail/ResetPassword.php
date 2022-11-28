@@ -20,6 +20,6 @@ class ResetPassword extends Mailable
 
     public function build()
     {
-        return $this->view('emails.resetpassword', $this->data)->subject('Por favor confirma tu correo');
+        return $this->view('emails.resetpassword', $this->data)->subject('Restablece tu contraseña de ACTfijos');
     }
 }

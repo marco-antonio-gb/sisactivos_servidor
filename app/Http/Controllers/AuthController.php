@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-
 class AuthController extends Controller {
 	/**
 	 * Create a new AuthController instance.
@@ -27,15 +26,13 @@ class AuthController extends Controller {
 	 * @return \Illuminate\Http\JsonResponse
 	 */
 	public function login(LoginRequest $request) {
-
 		try {
-			$correo = $request->correo;
-            $password = $request->password;
-            $usuarioExist =Usuario::where('correo','=',$correo)->exists();
-            // return $usuarioExist;
+			$correo       = $request->correo;
+			$password     = $request->password;
+			$usuarioExist = Usuario::where('correo', '=', $correo)->exists();
+			// return $usuarioExist;
 			if ($usuarioExist) {
-				$verificarEstado = Usuario::select('estado')->where('correo','=',$correo)->first();
-
+				$verificarEstado = Usuario::select('estado')->where('correo', '=', $correo)->first();
 				if (!$verificarEstado['estado']) {
 					return response()->json([
 						'success' => false,
@@ -58,8 +55,8 @@ class AuthController extends Controller {
 			}
 		} catch (\Exception $ex) {
 			return response()->json([
-				'success'      => false,
-				'error' => $ex->getMessage(),
+				'success' => false,
+				'error'   => $ex->getMessage(),
 			], 404);
 		}
 	}
@@ -131,7 +128,7 @@ class AuthController extends Controller {
 				$reset_token = strtolower(Str::random(64));
 				$url         = "http://localhost:8080/reset-password?token=" . $reset_token;
 				$data        = array('email' => $request->email, 'token' => $url);
-				$send        = Mail::to($request->email)->send(new ResetPassword($data));
+				$send        = Mail::to($request->email)->queue(new ResetPassword($data));
 				DB::table('password_resets')->insert([
 					'email'      => $request->email,
 					'token'      => $reset_token,
@@ -144,7 +141,7 @@ class AuthController extends Controller {
 			} else {
 				return response()->json([
 					'success' => false,
-					'message' => "No pudimos encontrar ese correo electrónico.",
+					'message' => "El correo no existe en el sistema.",
 				], 201);
 			}
 		} catch (\Exception $ex) {
@@ -169,7 +166,6 @@ class AuthController extends Controller {
 			$created = new Carbon($token_res->created_at);
 			$isPast  = $created->isPast();
 			if ($isPast) {
-
 				$result = true;
 			}
 		}
@@ -189,7 +185,7 @@ class AuthController extends Controller {
 			if ($validator->fails()) {
 				return response()->json([
 					'success' => false,
-					'message'   => $validator->errors()->all(),
+					'message' => $validator->errors()->all(),
 				], 400);
 			} else {
 				$existToken = $this->ExistToken($request->token);
@@ -198,10 +194,8 @@ class AuthController extends Controller {
 					$token        = DB::table('password_resets')
 						->where('token', '=', $request->token)
 						->first();
-
 					if (!$this->ExpiredToken($token->token)) {
 						$reset = Usuario::where('correo', '=', $token->email)->update(array('password' => $new_password));
-
 						return response()->json([
 							'success' => true,
 							'message' => "Contraseña actualizada exitosamente",
@@ -209,14 +203,13 @@ class AuthController extends Controller {
 					}
 					return response()->json([
 						'success' => false,
-						'message' => "El enlace para restablecer su contraña ha caducado.",
+						'message' => "El token para restablecer su contraña ha caducado.",
 					], 201);
 				}
-                return response()->json([
-                    'success' => false,
-                    'message' => "El enlace no es valido, intente con otro enlace.",
-                ], 201);
-
+				return response()->json([
+					'success' => false,
+					'message' => "El token no es valido, intente enviar el correo de recuperacion nuevamente.",
+				], 201);
 			}
 		} catch (\Exception $ex) {
 			return response()->json([

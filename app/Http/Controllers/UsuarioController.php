@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Mail;
 use App\Http\Requests\UsuarioStoreRequest;
 use App\Http\Requests\UsuarioUpdateRequest;
 use App\Http\Requests\UsuarioPictureRequest;
-
 class UsuarioController extends Controller {
 	// public function __construct() {
 	// 	$this->middleware('jwt.auth');
@@ -55,7 +54,6 @@ class UsuarioController extends Controller {
 				'cargo'     => $datos['cargo'],
 				'correo'    => $datos['correo'],
 				'foto'      => $imageName,
-
 				"password"  => bcrypt($datos['password']),
 			];
 			$user = Usuario::create($usuario);
@@ -78,7 +76,6 @@ class UsuarioController extends Controller {
 		try {
 			$user = Usuario::where('idUsuario', '=', $id)->select('idUsuario as usuario_id','paterno', 'materno', 'nombres', 'ci', 'ci_ext', 'cargo', 'telefono', 'direccion', 'correo', 'created_at', 'updated_at', 'foto', 'estado')->first();
 			if ($user) {
-				//Helpers\permissionHelper.php - funciones para roles y permisos
 				$user->setAttribute('roles', getAllRoles($id));
 				$user->setAttribute('permisos', getAllPermissions($id));
 				return response()->json([
@@ -210,7 +207,6 @@ class UsuarioController extends Controller {
 			], 404);
 		}
 	}
-
 	public function SuspendAccount(Request $request) {
 		try {
 			$usuario_id = $request['usuario_id'];
@@ -271,7 +267,6 @@ class UsuarioController extends Controller {
 	}
 	# Cambiar imagen actual del usuario o establecer una nueva imagen
 	public function ChangeUserPicture(UsuarioPictureRequest $request) {
-
 		try {
 			DB::beginTransaction();
 			$usuario_id   = $request->usuario_id;
@@ -280,7 +275,7 @@ class UsuarioController extends Controller {
 			$new_filename = storeImage($request['foto'], $folder);
 			if ($new_filename) {
 				$update_result = Usuario::where('idUsuario', '=', $usuario_id)->update(['foto' => $new_filename]);
-				$this->deleteImage($folder, $old_filename);
+				deleteImage($folder, $old_filename);
 				DB::commit();
 				return response()->json([
 					'success' => true,
@@ -299,7 +294,7 @@ class UsuarioController extends Controller {
 		try {
 			$old_filename = Usuario::find($id)->foto;
 			if ($old_filename) {
-				$delete = $this->deleteImage("usuarios", $old_filename);
+				$delete = deleteImage("usuarios", $old_filename);
 				Usuario::where('idUsuario', $id)->update(['foto' => ""]);
 				return response()->json([
 					'success' => true,
@@ -316,30 +311,6 @@ class UsuarioController extends Controller {
 				'success' => false,
 				'message' => $ex->getMessage(),
 			], 404);
-		}
-	}
-
-	public function deleteImage($folder, $file) {
-		try {
-			$originalPath = '/' . $folder . '/';
-			$full_path    = public_path() . $originalPath . $file;
-			if (file_exists($full_path)) {
-				unlink($full_path);
-				return [
-					'success' => true,
-					'message' => "El archivo se elimino",
-				];
-			} else {
-				return [
-					'success' => false,
-					'message' => "El archivo no existe",
-				];
-			}
-		} catch (\Exception $ex) {
-			return [
-				'success' => false,
-				'message' => $ex->getMessage(),
-			];
 		}
 	}
 
