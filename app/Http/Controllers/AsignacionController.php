@@ -3,19 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\Asignacion;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\AsignacionStoreRequest;
 use App\Http\Requests\AsignacionUpdateRequest;
+use App\Http\Resources\Asignacion\AsignacionCollection;
 
+class AsignacionController extends Controller {
 
-class AsignacionController extends Controller
-{
+	public function index() {
+		try {
+			// return Asignacion::with('usuario')->with('responsable')->get();
+			return new AsignacionCollection(Asignacion::with('usuario')->with('responsable')->get());
 
-    public function index()
-    {
-        try {
-			$result = Asignacion::all();
 			if ($result->isNotEmpty()) {
 				return response()->json([
 					'success' => true,
@@ -32,12 +31,10 @@ class AsignacionController extends Controller
 				'message' => $ex->getMessage(),
 			], 404);
 		}
-    }
+	}
 
-
-    public function store(AsignacionStoreRequest $request)
-    {
-        try {
+	public function store(AsignacionStoreRequest $request) {
+		try {
 			DB::beginTransaction();
 			$user = Asignacion::create($request->all());
 			DB::commit();
@@ -52,12 +49,10 @@ class AsignacionController extends Controller
 				'message' => $ex->getMessage(),
 			];
 		}
-    }
+	}
 
-
-    public function show($id)
-    {
-        try {
+	public function show($id) {
+		try {
 			$result = Asignacion::with('responsable')->with('usuario')->where('idAsignacion', '=', $id)->first();
 
 			if ($result) {
@@ -77,12 +72,10 @@ class AsignacionController extends Controller
 				'message' => $ex->getMessage(),
 			], 404);
 		}
-    }
+	}
 
-
-    public function update(AsignacionUpdateRequest $request, $id)
-    {
-        try {
+	public function update(AsignacionUpdateRequest $request, $id) {
+		try {
 			$asignacion = Asignacion::where('idAsignacion', '=', $id)->update($request->all());
 			if ($asignacion) {
 				return response()->json([
@@ -100,11 +93,9 @@ class AsignacionController extends Controller
 				'message' => $ex->getMessage(),
 			], 404);
 		}
-    }
+	}
 
-
-    public function destroy($id)
-    {
-        //
-    }
+	public function destroy($id) {
+		//
+	}
 }

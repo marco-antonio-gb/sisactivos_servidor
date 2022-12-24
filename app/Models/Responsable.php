@@ -10,7 +10,7 @@ class Responsable extends Model
 {
     protected $primaryKey = 'idResponsable';
     protected $table = "responsables";
-
+    protected $casts      = ['condicion' => 'boolean'];
     protected $fillable = [
         'servicio_id',
         'usuario_id',
@@ -20,6 +20,11 @@ class Responsable extends Model
     protected function serializeDate(DateTimeInterface $date) {
 		return $date->format('Y-m-d H:i:s');
 	}
+    // public function getCreatedAtAttribute($value) {
+    //     return empty($value)
+    //     ? null
+    //     : Carbon::parse($value)->translatedFormat('l, j \d\e F \d\e\l Y H:i:s');
+    // }
     public function usuario() {
 		return $this->BelongsTo(Usuario::class, 'usuario_id', 'idUsuario');
 	}

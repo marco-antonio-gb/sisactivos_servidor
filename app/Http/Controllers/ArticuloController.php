@@ -1,14 +1,14 @@
 <?php
 namespace App\Http\Controllers;
-use App\Http\Requests\ArticuloStoreRequest;
+use App\Models\Archivo;
 use App\Models\Articulo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
+use App\Http\Requests\ArticuloStoreRequest;
 class ArticuloController extends Controller {
 	public function index() {
 		try {
-			$result = Articulo::all();
+			$result = Articulo::with('orgfinanciero')->with('categoria')->get();
 			if ($result->isNotEmpty()) {
 				return response()->json([
 					'success' => true,
@@ -27,26 +27,25 @@ class ArticuloController extends Controller {
 		}
 	}
 	public function store(ArticuloStoreRequest $request) {
-
 		try {
 			DB::beginTransaction();
-			$folder    = "articulos";
-			$imageName = "****";
+            $folder = 'home/articulos/fotos/';
 			$datos     = json_decode($request['data'], true);
-			$imageName = storeImage($request['imagen'], $folder);
+            $fileName = storeImage($request['imagen'], $folder);
 			$articulo  = [
 				'codigo'           => $datos['codigo'],
 				'unidad'           => $datos['unidad'],
 				'descripcion'      => $datos['descripcion'],
-				'imagen'           => $imageName,
+				'imagen'           => $fileName,
 				'costo'            => $datos['costo'],
 				'estado'           => $datos['estado'],
 				'nombre'           => $datos['nombre'],
 				'categoria_id'     => $datos['categoria_id'],
 				'orgfinanciero_id' => $datos['orgfinanciero_id'],
 			];
-			$user = Articulo::create($articulo);
+			Articulo::create($articulo);
 			DB::commit();
+
 			return response()->json([
 				'success' => true,
 				'message' => 'Articulo registrado correctamente',
@@ -86,8 +85,12 @@ class ArticuloController extends Controller {
 	}
 	public function destroy($id) {
 		try {
-			$articulo = Articulo::where('idArticulo', '=', $id)->delete();
+            $folder = 'home/articulos/fotos/';
+
+			$articulo = Articulo::find($id);
 			if ($articulo) {
+                deleteImage($folder, $articulo->imagen);
+                $articulo->delete();
 				return response()->json([
 					'success' => true,
 					'message' => 'Articulo eliminado correctamente',

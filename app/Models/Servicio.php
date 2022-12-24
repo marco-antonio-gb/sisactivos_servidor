@@ -6,7 +6,7 @@ class Servicio extends Model
 {
     protected $primaryKey = 'idServicio';
     protected $table = "servicios";
-
+    protected $casts      = ['condicion' => 'boolean'];
     protected $fillable = [
         'nombre',
         'codigo',

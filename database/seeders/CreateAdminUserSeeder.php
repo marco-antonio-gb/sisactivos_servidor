@@ -18,5 +18,13 @@ class CreateAdminUserSeeder extends Seeder
         $permissions = Permission::pluck('id','id')->all();
         $user->givePermissionTo($permissions);
         $user->assignRole(1);
+        $roles=[2,3,4];
+        for ($i=2; $i <= 15; $i++) {
+            $_user = Usuario::find($i);
+            $_role = Role::find(array_rand($roles));
+            $_permissions = Permission::pluck('id','id')->all();
+            $_user->givePermissionTo($_permissions);
+            $_user->assignRole(array_rand($roles));
+        }
     }
 }

@@ -136,10 +136,10 @@ function storeImage($imagen, $folder, $w=500, $h=500) {
             #directorio para imagenes originales
             $originalPath = '/' . $folder . '/';
             #Redimencionando imagenes a 600x600
-            $image->fit(500, 500, function ($constraint) {
-                $constraint->upsize();
-                $constraint->aspectRatio();
-            });
+            // $image->fit(500, 500, function ($constraint) {
+            //     $constraint->upsize();
+            //     $constraint->aspectRatio();
+            // });
             $result = $randomString . '.jpg';
             #Almacenar imagen en carpeta con tamano Original
             $image->save(public_path() . $originalPath . $result);
@@ -172,5 +172,21 @@ function deleteImage($folder, $file) {
             'message' => $ex->getMessage(),
         ];
     }
+}
+function storageAnotherFile($file, $folder) {
+	$result = null;
+	try {
+		if ($file) {
+			$randomString = Str::uuid();
+			$extension    = $file->getClientOriginalExtension();
+			$originalPath = '/' . $folder . '/';
+			$result       = $randomString . '.' . $extension;
+			$destinationPath = public_path() . $originalPath . $result;
+			$file->move(public_path($originalPath), $result);
+		}
+	} catch (\Exception $th) {
+		$result = $th->getMessage();
+	}
+	return $result;
 }
 

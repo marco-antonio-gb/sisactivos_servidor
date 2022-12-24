@@ -17,7 +17,7 @@ class CreateOrgFinancierosTable extends Migration
             $table->id('idOrgfinanciero');
             $table->string('nombre');
             $table->string('descripcion')->nullable();
-            $table->boolean('condicion')->nullable(true);
+            $table->boolean('condicion')->default(true);
             $table->timestamps();
         });
     }

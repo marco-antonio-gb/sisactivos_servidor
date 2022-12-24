@@ -1,22 +1,20 @@
 <?php
-
 namespace App\Http\Requests\Categoria;
-
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Support\Facades\Request;
+use Illuminate\Validation\Rule;
 
-class StoreCategoriaRequest extends FormRequest {
+class UpdateCategoriaRequest extends FormRequest {
 	/**
 	 * Determine if the user is authorized to make this request.
 	 *
 	 * @return bool
 	 */
 	public function authorize() {
-
 		return true;
 	}
-
 	/**
 	 * Get the validation rules that apply to the request.
 	 *
@@ -24,13 +22,16 @@ class StoreCategoriaRequest extends FormRequest {
 	 */
 	public function rules() {
 		return [
-
-			'nombre'      => 'required|string|unique:categorias|max:255',
+			'nombre'      => ['required', 'string', 'max:255', Rule::unique('categorias')->ignore($this->categoria, 'idCategoria')],
 			'vida_util'   => 'required|integer|min:1|max:50',
 			'descripcion' => 'required|string|max:255',
 		];
 	}
-
+	/**
+	 * Get the validation rules that apply to the request.
+	 *
+	 * @return array
+	 */
 	public function messages() {
 		return [
 			'nombre.required'      => 'El nombre de categoria es requerido',
@@ -48,7 +49,6 @@ class StoreCategoriaRequest extends FormRequest {
 			'descripcion.max'      => 'La descripcion debe ser menor a 50',
 		];
 	}
-
 	protected function failedValidation(Validator $validator) {
 		$erros = $validator->errors()->toArray();
 		throw new HttpResponseException(response()->json([

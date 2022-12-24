@@ -28,11 +28,16 @@ class ServicioController extends Controller {
 	public function store(ServicioStoreRequest $request) {
 		try {
 			DB::beginTransaction();
-			$user = Servicio::create($request->all());
+            $servicio=[
+                'nombre' => $request->get('nombre'),
+                'codigo' => $request->get('codigo'),
+                'observacion' =>$request->get('observacion')
+            ];
+			Servicio::create($servicio);
 			DB::commit();
 			return response()->json([
 				'success' => true,
-				'message' => 'servicio registrado correctamente',
+				'message' => 'Servicio registrado correctamente',
 			], 201);
 		} catch (\Exception $ex) {
 			DB::rollback();
@@ -90,7 +95,7 @@ class ServicioController extends Controller {
 				return response()->json([
 					'success' => true,
 					'message' => 'Servicio eliminado correctamente',
-				], 201);
+				], 200);
 			}
 			return response()->json([
 				'success' => false,

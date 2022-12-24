@@ -11,6 +11,7 @@ class Asignacion extends Model
 {
     protected $primaryKey = 'idAsignacion';
     protected $table = "asignaciones";
+    protected $casts      = ['estado' => 'boolean'];
     protected $fillable = [
         'responsable_id',
         'usuario_id',
@@ -22,7 +23,7 @@ class Asignacion extends Model
 	}
 
     public function responsable() {
-		return $this->BelongsTo(Responsable::class, 'responsable_id', 'idResponsable');
+		return $this->BelongsTo(Responsable::class, 'responsable_id', 'idResponsable')->with('usuario')->with('servicio');
 	}
 
     public function usuario() {

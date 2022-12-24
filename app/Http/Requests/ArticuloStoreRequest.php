@@ -19,7 +19,6 @@ class ArticuloStoreRequest extends FormRequest {
 			'codigo'           => 'required',
 			'unidad'           => 'required',
 			'nombre'           => 'required',
-			'imagen'           => 'required',
 			'categoria_id'     => 'required',
 			'orgfinanciero_id' => 'required',
 
@@ -31,7 +30,6 @@ class ArticuloStoreRequest extends FormRequest {
 			'codigo'           => $datos['codigo'],
 			'unidad'           => $datos['unidad'],
 			'nombre'           => $datos['nombre'],
-			'imagen'           => $this->request->get('imagen'),
 			'categoria_id'     => $datos['categoria_id'],
 			'orgfinanciero_id' => $datos['orgfinanciero_id'],
 

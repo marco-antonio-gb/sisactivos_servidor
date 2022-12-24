@@ -39,7 +39,7 @@ class UsuarioController extends Controller {
 	public function store(UsuarioStoreRequest $request) {
 		try {
 			DB::beginTransaction();
-			$folder    = "usuarios";
+			$folder    = "/home/usuarios/fotos";
 			$imageName = "****";
 			$datos     = json_decode($request['data'], true);
 			$imageName = storeImage($request['foto'], $folder);
@@ -270,7 +270,7 @@ class UsuarioController extends Controller {
 		try {
 			DB::beginTransaction();
 			$usuario_id   = $request->usuario_id;
-			$folder       = "usuarios";
+			$folder       = "/home/usuarios/fotos";
 			$old_filename = Usuario::find($usuario_id)->foto;
 			$new_filename = storeImage($request['foto'], $folder);
 			if ($new_filename) {
