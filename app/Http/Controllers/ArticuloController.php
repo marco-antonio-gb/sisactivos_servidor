@@ -4,6 +4,8 @@ use App\Models\Archivo;
 use App\Models\Articulo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use PDF;
+
 use App\Http\Requests\ArticuloStoreRequest;
 class ArticuloController extends Controller {
 	public function index() {
@@ -107,4 +109,12 @@ class ArticuloController extends Controller {
 			], 404);
 		}
 	}
+
+    public function ArticulosReporte(){
+        $articulos=Articulo::all();
+        $fileName="Reporte Articulos";
+        $pdf          = PDF::loadView('articulos.articulo', array('articulos' => $articulos))->setPaper('letter', 'portrait');
+        return $pdf->stream($fileName);
+        //  return view('articulos.articulo',array('articulos' => $articulos));
+    }
 }

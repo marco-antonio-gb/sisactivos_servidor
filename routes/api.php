@@ -11,7 +11,7 @@ Route::group([
 	'middleware' => 'api',
 	'prefix'     => 'auth',
 ], function ($router) {
-	
+
 	Route::post('login', 'Auth\AuthController@login');
 	Route::post('logout', 'Auth\AuthController@logout');
 	Route::post('refresh', 'Auth\AuthController@refresh');
@@ -27,6 +27,10 @@ Route::group(['middleware' => ['jwt.verify', 'cors']], function () {
 	Route::apiResource('categorias', CategoriaController::class)->middleware(['role:Administrador']);
 	Route::apiResource('orgfinanciero', OrgfinancieroController::class)->middleware(['role:Administrador']);
 	Route::apiResource('asignaciones', AsignacionController::class)->middleware(['role:Administrador']);
+	Route::apiResource('detalle-asignacion', DetalleAsignacionController::class)->middleware(['role:Administrador']);
+	Route::apiResource('transferencias', TransferenciaController::class)->middleware(['role:Administrador']);
+	Route::apiResource('detalle-transferencias', DetalleTransferenciaController::class)->middleware(['role:Administrador']);
+	Route::apiResource('articulos', ArticuloController::class)->middleware(['role:Administrador']);
 	#Personas
 	Route::post('verificar-ci', 'PersonaController@VerificarCi');
 	#Usuarios
@@ -36,10 +40,12 @@ Route::group(['middleware' => ['jwt.verify', 'cors']], function () {
 	Route::post('verificar-correo', 'UsuarioController@VerificarCorreo');
 	Route::post('activate-account', 'UsuarioController@ActivateAccount');
 	Route::post('suspend-account', 'UsuarioController@SuspendAccount');
-	#Articulos
-	Route::apiResource('articulos', ArticuloController::class)->middleware(['role:Administrador']);
+	#Asignaciones
+    Route::get('asignaciones/detalle/{idAsignacion}','AsignacionController@AsignacionDetalle');
 	#Responsable
 	Route::get('responsable-baja/{id}', 'ResponsableController@bajaResponsable');
 	Route::get('responsable-usuarios', 'ResponsableController@Usuarios');
 	Route::get('responsable-servicios', 'ResponsableController@Servicios');
 });
+Route::get('reporte-articulos', 'ArticuloController@ArticulosReporte');
+Route::get('reporte-asignacion', 'AsignacionController@AsignacionReporte');
