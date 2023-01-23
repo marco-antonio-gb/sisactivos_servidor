@@ -1,26 +1,23 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Asignacion;
 
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
-
-class AsignacionStoreRequest extends FormRequest
-{
-    public function authorize() {
+class AsignacionStoreRequest extends FormRequest {
+	public function authorize() {
 		return true;
 	}
-
-
-    public function rules() {
+	public function rules() {
 		return [
 			'responsable_id' => 'required',
-			'usuario_id' => 'required',
+			'usuario_id'     => 'required',
+			'articulos'    => 'required',
+
 		];
 	}
-
-
 	protected function failedValidation(Validator $validator) {
 		$erros = $validator->errors()->toArray();
 		throw new HttpResponseException(response()->json([

@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Controllers;
-use App\Http\Requests\ServicioStoreRequest;
-use App\Http\Requests\ServicioUpdateRequest;
+use App\Http\Requests\Servicio\ServicioStoreRequest;
+use App\Http\Requests\Servicio\ServicioUpdateRequest;
 use App\Models\Servicio;
 use Illuminate\Support\Facades\DB;
 class ServicioController extends Controller {
@@ -70,8 +70,14 @@ class ServicioController extends Controller {
 	}
 	public function update(ServicioUpdateRequest $request, $id) {
 		try {
-			$servicio = Servicio::where('idServicio', '=', $id)->update($request->all());
+			$servicio = Servicio::where('idServicio', '=', $id)->first();
 			if ($servicio) {
+                $servicioData=[
+                    'nombre' => $request->get('nombre'),
+                    'codigo' => $request->get('codigo'),
+                    'observacion' =>$request->get('observacion')
+                ];
+                $servicio->update($servicioData);
 				return response()->json([
 					'success' => true,
 					'message' => 'Servicio Actualizado correctamente',

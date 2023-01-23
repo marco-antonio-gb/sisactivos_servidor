@@ -19,7 +19,7 @@ class ResponsableResource extends JsonResource {
 			'asignado'       => Carbon::parse($this->created_at, 'America/La_Paz')->translatedFormat('l, j \d\e F \d\e\l Y, H:i:s'),
 			'usuario'        => [
 				'usuario_id'      => $this->usuario->idUsuario,
-				'nombre_completo' => $this->usuario->nombres . ' ' . $this->usuario->paterno . ' ' . $this->usuario->materno,
+				'nombre_completo' => $this->usuario->paterno . ' ' . $this->usuario->materno . ' ' . $this->usuario->nombres,
 				'foto'            => $this->usuario->foto,
 				'cedula'          => $this->usuario->ci . ' ' . $this->usuario->ci_ext,
 				'cargo'           => $this->usuario->cargo,

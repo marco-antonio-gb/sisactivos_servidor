@@ -27,5 +27,9 @@ class RolesTableSeeder extends Seeder {
 			'name'       => "Transferencia",
 			'guard_name' => "api",
 		]);
+		Role::create([
+			'name'       => "Invitado",
+			'guard_name' => "api",
+		]);
 	}
 }

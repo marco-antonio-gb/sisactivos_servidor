@@ -1,19 +1,17 @@
 <?php
-namespace App\Http\Requests;
-use Illuminate\Validation\Rule;
-use Illuminate\Foundation\Http\FormRequest;
+namespace App\Http\Requests\Servicio;
 use Illuminate\Contracts\Validation\Validator;
-
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class ServicioUpdateRequest extends FormRequest {
+class ServicioStoreRequest extends FormRequest {
 	public function authorize() {
 		return true;
 	}
 	public function rules() {
 		return [
-			'usuario_id' => 'required',
-			'servicio_id' => 'required',
+			'nombre' => 'required|string|between:2,100',
+			'codigo' => 'required|string|max:10|unique:servicios',
 		];
 	}
 	protected function failedValidation(Validator $validator) {

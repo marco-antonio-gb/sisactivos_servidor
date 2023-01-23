@@ -18,7 +18,7 @@ class UsuariosTableSeeder extends Seeder {
 			"password"  => bcrypt('israel@gmail.com'),
 			"estado"    => true,
 		]);
-        Usuario::factory()->count(15)->create();
+        // Usuario::factory()->count(15)->create();
 
 	}
 }

@@ -3,14 +3,16 @@
 namespace App\Http\Controllers;
 
 use PDF;
+use App\Models\Articulo;
 use App\Models\Asignacion;
 use App\Models\DetalleAsignacion;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\QueryException;
-use App\Http\Requests\AsignacionStoreRequest;
-use App\Http\Requests\AsignacionUpdateRequest;
 use App\Http\Resources\Asignacion\AsignacionResource;
 use App\Http\Resources\Asignacion\AsignacionCollection;
+use App\Http\Requests\Asignacion\AsignacionStoreRequest;
+use App\Http\Requests\Asignacion\AsignacionUpdateRequest;
+use App\Http\Resources\DetalleAsignacion\DetalleAsignacionResource;
 
 class AsignacionController extends Controller {
 
@@ -39,8 +41,25 @@ class AsignacionController extends Controller {
 
 	public function store(AsignacionStoreRequest $request) {
 		try {
-			DB::beginTransaction();
-			$user = Asignacion::create($request->all());
+            DB::beginTransaction();
+            # Guardar asignacion
+            $asignacion=[
+                'responsable_id'=>$request['responsable_id'],
+                'usuario_id'=>$request['usuario_id'],
+            ];
+            #Obtenemos el ID de la Asignacion insertada
+			$asigacion_id =Asignacion::create($asignacion)->idAsignacion;
+            $articulos=$request['articulos'];
+            foreach ($articulos as $key => $articulo) {
+                $detalle_asignacion=[
+                    "asignacion_id" => $asigacion_id,
+                    "articulo_id" => $articulo['articulo_id'],
+                    "detalle" => $articulo['detalle'],
+                ];
+
+                DetalleAsignacion::create($detalle_asignacion);
+                Articulo::where('idArticulo','=',$articulo['articulo_id'])->update(['condicion'=>false]);
+            }
 			DB::commit();
 			return response()->json([
 				'success' => true,
@@ -100,7 +119,29 @@ class AsignacionController extends Controller {
 	}
 
 	public function destroy($id) {
-		//
+		try {
+            $detalleAsignaciones=DetalleAsignacion::where('asignacion_id','=',$id)->get();
+
+            foreach ($detalleAsignaciones as $key => $articulo) {
+                Articulo::where('idArticulo','=',$articulo->articulo_id)->update(['condicion'=>true]);
+            }
+			$asignacion = Asignacion::where('idAsignacion', '=', $id)->delete();
+			if ($asignacion) {
+				return response()->json([
+					'success' => true,
+					'message' => 'Servicio eliminado correctamente',
+				], 200);
+			}
+			return response()->json([
+				'success' => false,
+				'message' => 'Registro no encontrado',
+			], 201);
+		} catch (\Exception $ex) {
+			return response()->json([
+				'success' => false,
+				'message' => $ex->getMessage(),
+			], 404);
+		}
 	}
 
 
@@ -125,7 +166,31 @@ class AsignacionController extends Controller {
 		}
     }
 
-    public function AsignacionReporte(){
+    public function AsignacionReporte($id){
+        // return DetalleAsignacion::with('asignacion')->with('articulo')->where('asignacion_id', '=', $id)->first();
+        // try {
+		// 	// $asignacion = DetalleAsignacion::where('asignacion_id', '=', $id)->with('asignacion')->with('articulo')->get();
+		// 	$result = new DetalleAsignacionResource(DetalleAsignacion::with('asignacion')->with('articulo')->where('asignacion_id', '=', $id)->first());
+
+		// 	if (count($asignacion)>0) {
+		// 		return response()->json([
+		// 			'success' => true,
+		// 			'data' => $asignacion,
+		// 		], 201);
+		// 	}
+		// 	return response()->json([
+		// 		'success' => false,
+		// 		'message' => 'El asignacion No se pudo encontrar',
+		// 	], 201);
+		// } catch (\Exception $ex) {
+		// 	return response()->json([
+		// 		'success' => false,
+		// 		'message' => $ex->getMessage(),
+		// 	], 404);
+		// }
+
+
+
         $asignacion=[];
         $fileName="Reporte Asignacion";
         $pdf          = PDF::loadView('asignacion.asignacion', array('asignacion' => $asignacion))->setPaper('letter', 'landscape');

@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Responsable;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 
-
-class AsignacionUpdateRequest extends FormRequest
+class ResponsableStoreRequest extends FormRequest
 {
+
     public function authorize() {
 		return true;
 	}
@@ -15,8 +15,8 @@ class AsignacionUpdateRequest extends FormRequest
 
     public function rules() {
 		return [
-			'responsable_id' => 'required',
 			'usuario_id' => 'required',
+			'servicio_id' => 'required',
 		];
 	}
 

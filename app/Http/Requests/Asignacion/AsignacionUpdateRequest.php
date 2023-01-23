@@ -1,19 +1,26 @@
 <?php
-namespace App\Http\Requests;
+
+namespace App\Http\Requests\Asignacion;
+
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class ServicioStoreRequest extends FormRequest {
-	public function authorize() {
+class AsignacionUpdateRequest extends FormRequest
+{
+    public function authorize() {
 		return true;
 	}
-	public function rules() {
+
+
+    public function rules() {
 		return [
-			'nombre' => 'required|string|between:2,100',
-			'codigo' => 'required|string|max:10|unique:servicios',
+			'responsable_id' => 'required',
+			'usuario_id' => 'required',
 		];
 	}
+
+
 	protected function failedValidation(Validator $validator) {
 		$erros = $validator->errors()->toArray();
 		throw new HttpResponseException(response()->json([

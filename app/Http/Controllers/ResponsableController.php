@@ -6,9 +6,10 @@ use App\Models\Usuario;
 use App\Models\Servicio;
 use App\Models\Responsable;
 use Illuminate\Support\Facades\DB;
-use App\Http\Requests\ResponsableStoreRequest;
-use App\Http\Requests\ResponsableUpdateRequest;
 use App\Http\Resources\Responsable\ResponsableCollection;
+use App\Http\Requests\Responsable\ResponsableStoreRequest;
+use App\Http\Requests\Responsable\ResponsableUpdateRequest;
+use App\Http\Resources\Responsable\ResponsableOptionsCollection;
 
 class ResponsableController extends Controller {
 
@@ -123,6 +124,17 @@ class ResponsableController extends Controller {
 	 *  ------------------
 	 *
 	 */
+	public function ResponsablesOptions() {
+		try {
+            // return Responsable::with('usuario')->with('servicio')->get();
+			return new ResponsableOptionsCollection(Responsable::with('usuario')->with('servicio')->where('condicion',true)->get());
+		} catch (\Exception $ex) {
+			return response()->json([
+				'success' => false,
+				'message' => $ex->getMessage(),
+			], 404);
+		}
+	}
 	public function Usuarios() {
 		try {
 			$usuarios = Usuario::select('idUsuario AS usuario_id', DB::raw("CONCAT(IFNULL(paterno,''),' ',IFNULL(materno,''),' ',IFNULL(nombres,'')) AS nombre_completo"))->where('estado', '=', true)->get();

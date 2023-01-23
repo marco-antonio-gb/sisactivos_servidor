@@ -20,7 +20,7 @@ class AsignacionResource extends JsonResource
 			'asignado'       => Carbon::parse($this->created_at, 'America/La_Paz')->translatedFormat('l, j \d\e F \d\e\l Y, H:i:s'),
 			'usuario'        => [
 				'usuario_id'      => $this->usuario->idUsuario,
-				'nombre_completo' => $this->usuario->nombres . ' ' . $this->usuario->paterno . ' ' . $this->usuario->materno,
+				'nombre_completo' => $this->usuario->paterno . ' ' . $this->usuario->materno . ' ' . $this->usuario->nombres,
 				// 'foto'            => $this->usuario->foto,
 				// 'cedula'          => $this->usuario->ci . ' ' . $this->usuario->ci_ext,
 				'cargo'           => $this->usuario->cargo,
@@ -29,7 +29,7 @@ class AsignacionResource extends JsonResource
 			],
 			'responsable'       => [
 				'responsable_id' => $this->responsable->idResponsable,
-				'nombre_completo' => $this->responsable->usuario->nombres . ' ' . $this->responsable->usuario->paterno . ' ' . $this->responsable->usuario->materno,
+				'nombre_completo' => $this->responsable->usuario->paterno . ' ' . $this->responsable->usuario->materno . ' ' . $this->responsable->usuario->nombres,
 				// 'foto'            => $this->responsable->usuario->foto,
 				// 'cedula'          => $this->responsable->usuario->ci . ' ' . $this->responsable->usuario->ci_ext,
 				'cargo'           => $this->responsable->usuario->cargo,

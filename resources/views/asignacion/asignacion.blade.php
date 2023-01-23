@@ -56,16 +56,16 @@ $GLOBALS['usuario'] = 'Impreso: ';
     <table width="100%" >
         <tr>
             <th style="border: none !important;">
-                <span>ENTIDAD: 904</span>
+                <span>ENTIDAD: </span>
             </th>
             <th style="border: none !important;">
-                <span>Gobierno Autonomo Departamental de Oruro</span>
+                <span>CENTRO DE SALUDAS.D.A.S.D.A VINTO</span>
             </th>
             <th style="border: none !important;">
-                <span>UNIDAD: 07</span>
+                <span>UNIDAD:</span>
             </th>
             <th style="border: none !important;">
-                <span>HOSPITAL GENERAL SAN JUAN DE DIOS</span>
+                <span>NOMBRE DEL SERVICIO</span>
             </th>
         </tr>
         <tr>
@@ -76,7 +76,7 @@ $GLOBALS['usuario'] = 'Impreso: ';
                 <strong>RESPONSABLE:</strong>
             </td>
             <td style="border: none !important;">
-                <span> DRA. ANA MARIANELA GARCIA COCA</span>
+                <span> DRA. XXXXXXXXX XXXXXXXXXX xxxxxxx</span>
             </td>
             <td style="border: none !important;">
                 <strong>CI:</strong>
@@ -133,5 +133,11 @@ $GLOBALS['usuario'] = 'Impreso: ';
         <p>La no obediencia a estas prohibiciones generara responsabilidades establecidas en la Ley Nro. 1178 y sus reglamentos.</p>
         <p>En señal de conformidad y aceptacion  se firma el siguiente acta.</p>
     </div>
+{{-- EL QUE REALIZA ASIGNACION --}}
+    <p>RESPONSABLE ACTIVOS F</p>
+
+    <p>TEC. OPERADOR</p>
+{{-- USUARIO QUE ES ASIGNADO --}}
+    <p>RECIBI CONFORME</p>
 </body>
 </html>

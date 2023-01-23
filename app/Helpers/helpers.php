@@ -124,29 +124,23 @@ function getcolorAvatar($name) {
     $colortest = $ascii%26;
     return  $colors[$colortest];
 }
-#@Params:  Imagen, Carpeta destino
 function storeImage($imagen, $folder, $w=500, $h=500) {
     $result = null;
     try {
         if ($imagen) {
-            #Generar codigo UUID
             $randomString = Str::uuid();
-            #Creando una imagen codificado en JPG
             $image = Image::make($imagen)->encode('jpg');
-            #directorio para imagenes originales
             $originalPath = '/' . $folder . '/';
-            #Redimencionando imagenes a 600x600
             // $image->fit(500, 500, function ($constraint) {
             //     $constraint->upsize();
             //     $constraint->aspectRatio();
             // });
             $result = $randomString . '.jpg';
-            #Almacenar imagen en carpeta con tamano Original
             $image->save(public_path() . $originalPath . $result);
             $image->destroy();
         }
     } catch (\Exception $th) {
-        $result = $th->getMessage();
+        $result = null;
     }
     return $result;
 }

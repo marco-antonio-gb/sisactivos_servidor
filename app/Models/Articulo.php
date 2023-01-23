@@ -7,8 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Articulo extends Model {
 	protected $primaryKey = 'idArticulo';
+
     protected $table = "articulos";
-    protected $casts      = ['condicion' => 'boolean'];
+    protected $casts      = ['condicion' => 'boolean', 'idArticulo'=>'integer'];
 	protected $fillable   = [
 		'codigo',
 		'unidad',
@@ -19,9 +20,12 @@ class Articulo extends Model {
 		'estado',
 		'condicion',
 		'fecha_registro',
+
+
 		'categoria_id',
 		'orgfinanciero_id',
 	];
+
 	protected function serializeDate(DateTimeInterface $date) {
 		return $date->format('Y-m-d H:i:s');
 	}
@@ -33,7 +37,7 @@ class Articulo extends Model {
 		return $this->BelongsTo(Categoria::class, 'categoria_id', 'idCategoria');
 	}
 
-    // public function archivos(){
-    //     return $this->hasMany(Archivo::class,'articulo_id','idArticulo');
-    // }
+    public function archivo(){
+        return $this->HasOne(Archivo::class,'articulo_id','idArticulo');
+    }
 }

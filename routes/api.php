@@ -31,6 +31,7 @@ Route::group(['middleware' => ['jwt.verify', 'cors']], function () {
 	Route::apiResource('transferencias', TransferenciaController::class)->middleware(['role:Administrador']);
 	Route::apiResource('detalle-transferencias', DetalleTransferenciaController::class)->middleware(['role:Administrador']);
 	Route::apiResource('articulos', ArticuloController::class)->middleware(['role:Administrador']);
+	Route::apiResource('archivos', ArchivoController::class)->middleware(['role:Administrador']);
 	#Personas
 	Route::post('verificar-ci', 'PersonaController@VerificarCi');
 	#Usuarios
@@ -42,10 +43,13 @@ Route::group(['middleware' => ['jwt.verify', 'cors']], function () {
 	Route::post('suspend-account', 'UsuarioController@SuspendAccount');
 	#Asignaciones
     Route::get('asignaciones/detalle/{idAsignacion}','AsignacionController@AsignacionDetalle');
+    Route::get('responsables-options','ResponsableController@ResponsablesOptions');
+    #ARticulos
+    Route::get('articulos-options','ArticuloController@articulosOptions');
 	#Responsable
 	Route::get('responsable-baja/{id}', 'ResponsableController@bajaResponsable');
 	Route::get('responsable-usuarios', 'ResponsableController@Usuarios');
 	Route::get('responsable-servicios', 'ResponsableController@Servicios');
 });
 Route::get('reporte-articulos', 'ArticuloController@ArticulosReporte');
-Route::get('reporte-asignacion', 'AsignacionController@AsignacionReporte');
+Route::get('reporte-asignacion/{idAsignacion}', 'AsignacionController@AsignacionReporte');

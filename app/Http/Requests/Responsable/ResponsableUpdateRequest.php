@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Responsable;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 
-class ResponsableStoreRequest extends FormRequest
+class ResponsableUpdateRequest extends FormRequest
 {
 
     public function authorize() {
