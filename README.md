@@ -42,14 +42,20 @@ into our comprehensive video library.
 ```
 2. Instalar dependencias 
 ```
-composer install
+composer install --ignore-platform-reqs
+
 ```
 3. Generar el Archivo .ENV del proyecto.
   - Haga una copia del archivo **.env.example** ubicado en la raiz del proyecto
   - Renombre el archivo a: **.env**
 4. Configure las credenciales para su base de datos en el archivo **.env**.
 5. Generar clave del proyecto Laravel
+
+
 ```
+cp .env.example .env
+
+
 php artisan key:generate
 ```
 6. Publicar el paquete **tymon/jwt-auth** para la autenticacion de usuarios.
