@@ -14,34 +14,21 @@ class DetalleAsignacionResource extends JsonResource {
 	 */
 	public function toArray($request) {
 		return [
-			'detalleasignacion_id' => $this->idDetalleAsignacion,
-			'detalle'        => $this->detalle,
-			'fecha_hora'     => Carbon::parse($this->fecha_hora, 'America/La_Paz')->translatedFormat('l, j \d\e F \d\e\l Y, H:i:s'),
-            'asignacion'     => $this->asignacion,
-            'articulo'       => $this->articulo
-			// 'usuario'        => [
-			// 	'usuario_id'      => $this->usuario->idUsuario,
-			// 	'nombre_completo' => $this->usuario->nombres . ' ' . $this->usuario->paterno . ' ' . $this->usuario->materno,
-			// 	'foto'            => $this->usuario->foto,
-			// 	'cedula'          => $this->usuario->ci . ' ' . $this->usuario->ci_ext,
-			// 	'cargo'           => $this->usuario->cargo,
-			// 	'correo'          => $this->usuario->correo,
-			// 	'estado'          => $this->usuario->estado,
-			// ],
-			// 'responsable'       => [
-			// 	'responsable_id' => $this->responsable->idResponsable,
-			// 	'nombre_completo' => $this->responsable->usuario->nombres . ' ' . $this->responsable->usuario->paterno . ' ' . $this->responsable->usuario->materno,
-			// 	'foto'            => $this->responsable->usuario->foto,
-			// 	'cedula'          => $this->responsable->usuario->ci . ' ' . $this->responsable->usuario->ci_ext,
-			// 	'cargo'           => $this->responsable->usuario->cargo,
-			// 	'correo'          => $this->responsable->usuario->correo,
-			// 	'estado'          => $this->responsable->usuario->estado,
-			// ],
+			'asignacion_id'       => $this->idAsignacion,
+			'estado'              => $this->estado,
+			'creado'              => Carbon::parse($this->created_at, 'America/La_Paz')->translatedFormat('l, j \d\e F \d\e\l Y, H:i:s'),
+			'actualizado'         => Carbon::parse($this->updated_at, 'America/La_Paz')->translatedFormat('l, j \d\e F \d\e\l Y, H:i:s'),
+			'unidad'              => strtoupper($this->responsable->servicio->nombre),
+			'responsable'         => [
+				'nombre_completo' => strtoupper($this->responsable->usuario->paterno . ' ' . $this->responsable->usuario->materno . ' ' . $this->responsable->usuario->nombres),
+				'cargo'           => strtoupper($this->responsable->usuario->cargo),
+				'cedula'          => $this->responsable->usuario->ci . ' ' . $this->responsable->usuario->ci_ext,
+				'servicio'        => strtoupper($this->responsable->servicio->nombre),
+			],
+			'detalle_asignacion'  => $this->detalle_asignacion,
+			'responsable_activos' => strtoupper($this->usuario->paterno . ' ' . $this->usuario->materno . ' ' . $this->usuario->nombres),
+
 		];
 	}
-	public function with($request) {
-		return [
-			'success' => $this->idAsignacion ? true : false,
-		];
-	}
+
 }

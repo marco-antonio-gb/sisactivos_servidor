@@ -14,21 +14,25 @@ class OrgFinancierosSeeder extends Seeder
      */
     public function run()
     {
-        OrgFinanciero::create([
-            'nombre' => 'Tesoro General de la Nacion',
-            'descripcion' => 'Descripcion de Tesoro General de la Nacion',
-        ]);
-        OrgFinanciero::create([
-            'nombre' => 'Donaciones HIPC II',
-            'descripcion' => 'Descripcion de Donaciones HIPC II',
-        ]);
-        OrgFinanciero::create([
-            'nombre' => 'Regalias',
-            'descripcion' => 'Descripcion de Regalias',
-        ]);
-        OrgFinanciero::create([
-            'nombre' => 'Otros recursos especificos',
-            'descripcion' => 'Descripcion de Otros recursos especificos',
-        ]);
+        $orgfinancieros=[
+            'Tesoro General de la Nacion',
+            'Donacion - HIPC',
+            'T.G.N. Impuestos directos a los Hidrocarburos ',
+            'Otros organismos financieros del gobierno',
+            'Regalias',
+            'Otros recursos espcificos',
+            'Fondo andino de reserva',
+            'Alcaldia municipal de Oruro',
+            'Gobierno autonomo departamental de oruro',
+            'Recursos propios '
+        ];
+
+        foreach ($orgfinancieros as $key => $org) {
+            OrgFinanciero::create([
+                'nombre' => $org,
+                'descripcion' => '',
+            ]);
+        }
+
     }
 }

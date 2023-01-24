@@ -14,30 +14,29 @@ class ServicioSeeder extends Seeder
      */
     public function run()
     {
-        Servicio::create([
-            'nombre' => 'Administracion',
-            'codigo' => 'ADM',
-            'observacion' => 'Descripcion categoria Administracion',
-        ]);
-        Servicio::create([
-            'nombre' => 'Direccion',
-            'codigo' => 'DIR',
-            'observacion' => 'Descripcion categoria Direccion',
-        ]);
-        Servicio::create([
-            'nombre' => 'Sistemas',
-            'codigo' => 'SIS',
-            'observacion' => 'Descripcion categoria Sistemas',
-        ]);
-        Servicio::create([
-            'nombre' => 'Emergencias',
-            'codigo' => 'EMRG',
-            'observacion' => 'Descripcion categoria Emergencias',
-        ]);
-        Servicio::create([
-            'nombre' => 'Mantenimiento',
-            'codigo' => 'MNTO',
-            'observacion' => 'Descripcion categoria Mantenimiento',
-        ]);
+        $servicios=[
+            'Direccion',
+            'Administracion',
+            'Jefatura de enfermeria',
+            'Laboratorio Clinico',
+            'Triaje',
+            'Emergencia',
+            'Recursos Humanos',
+            'Contaduria',
+            'Tesoreria',
+            'Farmacia',
+            'Almacen',
+            'Activos fijos',
+            'Quirofano',
+            'Maternidad'
+        ];
+        foreach ($servicios as $key => $servicio) {
+            Servicio::create([
+                'nombre' => $servicio,
+                'codigo'=>substr(strtoupper($servicio),0,3)
+            ]);
+        }
+
+
     }
 }

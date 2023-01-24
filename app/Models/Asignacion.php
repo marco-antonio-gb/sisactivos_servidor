@@ -30,6 +30,10 @@ class Asignacion extends Model
 		return $this->BelongsTo(Usuario::class, 'usuario_id', 'idUsuario');
 	}
 
+    public function detalle_asignacion() {
+		return $this->HasMany(DetalleAsignacion::class, 'asignacion_id', 'idAsignacion')->with('articulo');
+	}
+
 
 
 }

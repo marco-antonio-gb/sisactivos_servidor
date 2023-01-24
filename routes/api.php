@@ -32,6 +32,7 @@ Route::group(['middleware' => ['jwt.verify', 'cors']], function () {
 	Route::apiResource('detalle-transferencias', DetalleTransferenciaController::class)->middleware(['role:Administrador']);
 	Route::apiResource('articulos', ArticuloController::class)->middleware(['role:Administrador']);
 	Route::apiResource('archivos', ArchivoController::class)->middleware(['role:Administrador']);
+	Route::apiResource('funcionarios', FuncionarioController::class)->middleware(['role:Administrador']);
 	#Personas
 	Route::post('verificar-ci', 'PersonaController@VerificarCi');
 	#Usuarios
@@ -52,4 +53,4 @@ Route::group(['middleware' => ['jwt.verify', 'cors']], function () {
 	Route::get('responsable-servicios', 'ResponsableController@Servicios');
 });
 Route::get('reporte-articulos', 'ArticuloController@ArticulosReporte');
-Route::get('reporte-asignacion/{idAsignacion}', 'AsignacionController@AsignacionReporte');
+Route::post('reporte-asignacion', 'AsignacionController@AsignacionReporte');

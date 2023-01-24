@@ -51,6 +51,12 @@ th {
 .mt-2 {
     margin-top: 16px;
 }
+.mt-3 {
+    margin-top: 32px;
+}
+.mt-4 {
+    margin-top: 64px;
+}
 .mb-2 {
     margin-bottom: 16px;
 }

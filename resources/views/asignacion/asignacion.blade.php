@@ -5,6 +5,7 @@ $GLOBALS['usuario'] = 'Impreso: ';
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -13,6 +14,7 @@ $GLOBALS['usuario'] = 'Impreso: ';
     <link rel="stylesheet" href="{{ asset('/css/pdf.css') }}" media="all" />
     <title>Reporte Articulos</title>
 </head>
+
 <body>
     <script type="text/php">
         if (isset($pdf)) {
@@ -50,94 +52,119 @@ $GLOBALS['usuario'] = 'Impreso: ';
             </td>
         </tr>
     </table>
-<div style="margin-top:10px;margin-bottom:10px; border-bottom: 1px solid #9b9b9b;">
+    <div style="margin-top:10px;margin-bottom:10px; border-bottom: 1px solid #9b9b9b;">
+        <table width="100%">
+            <tr>
+                <th style="border: none !important;" class="text-left">
+                    <span>ENTIDAD: </span>
+                </th>
+                <th style="border: none !important;" class="text-left">
+                    <span>CENTRO DE SALUD INTEGRAL VINTO</span>
+                </th>
+                <th style="border: none !important;" class="text-left">
+                    <span>UNIDAD:</span>
+                </th>
+                <th style="border: none !important;" class="text-left">
+                    <span>{{ $datos['unidad'] }}</span>
+                </th>
+            </tr>
+            <tr>
+                <td style="border: none !important;"></td>
+            </tr>
+            <tr>
+                <td style="border: none !important;">
+                    <strong>RESPONSABLE:</strong>
+                </td>
+                <td style="border: none !important;">
+                    <span>{{ $datos['responsable']['nombre_completo'] }}</span>
+                </td>
+                <td style="border: none !important;">
+                    <strong>CI:</strong>
+                </td>
+                <td style="border: none !important;">
+                    <span>{{ $datos['responsable']['cedula'] }}</span>
+                </td>
 
+            </tr>
+            <tr>
+                <td style="border: none !important;">
+                    <strong>CARGO:</strong>
+                </td>
+                <td style="border: none !important;">
+                    <span>{{ $datos['responsable']['cargo'] }}</span>
+                </td>
 
-    <table width="100%" >
-        <tr>
-            <th style="border: none !important;">
-                <span>ENTIDAD: </span>
-            </th>
-            <th style="border: none !important;">
-                <span>CENTRO DE SALUDAS.D.A.S.D.A VINTO</span>
-            </th>
-            <th style="border: none !important;">
-                <span>UNIDAD:</span>
-            </th>
-            <th style="border: none !important;">
-                <span>NOMBRE DEL SERVICIO</span>
-            </th>
-        </tr>
-        <tr>
-            <td style="border: none !important;"></td>
-        </tr>
-        <tr>
-            <td style="border: none !important;">
-                <strong>RESPONSABLE:</strong>
-            </td>
-            <td style="border: none !important;">
-                <span> DRA. XXXXXXXXX XXXXXXXXXX xxxxxxx</span>
-            </td>
-            <td style="border: none !important;">
-                <strong>CI:</strong>
-            </td>
-            <td style="border: none !important;">
-                <span>5779557</span> <span>OR</span>
-            </td>
-
-        </tr>
-        <tr>
-            <td  style="border: none !important;">
-                <strong>CARGO:</strong>
-            </td>
-            <td  style="border: none !important;">
-                <span>GERENTE DE VENTAS</span>
-            </td>
-
-        </tr>
-        <tr>
-            <td  style="border: none !important;">
-                <strong>OFICINA:</strong>
-            </td>
-            <td  style="border: none !important;">
-                <span>CIRUGIA GENERAL</span>
-            </td>
-        </tr>
-    </table>
-</div>
-    @if (count($asignacion) > 0)
+            </tr>
+            <tr>
+                <td style="border: none !important;">
+                    <strong>OFICINA:</strong>
+                </td>
+                <td style="border: none !important;">
+                    <span>{{ $datos['unidad'] }}</span>
+                </td>
+            </tr>
+        </table>
+    </div>
+    @if (count($datos['detalle_asignacion']) > 0)
         <table class=" mt-1" width="100%">
             <tr>
                 <td class="text-center cell-title" width="115px">CODIGO</td>
                 <td class="text-center cell-title">UNIDAD</td>
-                <td class="text-center cell-title">DESCRIPCION</td>
+                <td class="text-center cell-title">DESCRIPCION / DETALLE</td>
                 <td class="text-center cell-title" width="30px">ESTADO</td>
             </tr>
-            @foreach ($asignacion as $articulo)
+            @foreach ($datos['detalle_asignacion'] as $detalle)
                 <tr>
-                    <td class="text-center">{{ $articulo->codigo }}</td>
-                    <td class="text-center">{{ $articulo->unidad }}</td>
-                    <td>{{ $articulo->descripcion }}</td>
-                    <td style="text-transform: uppercase;">{{ $articulo->estado }}</td>
+                    <td class="text-center">{{ $detalle->articulo->codigo }}</td>
+                    <td class="text-center">{{ $detalle->articulo->unidad }}</td>
+                    <td>{{ $detalle->articulo->descripcion }} <br> <strong>DETALLE: {{ $detalle->detalle }}</strong>
+                    </td>
+                    <td style="text-transform: uppercase;">{{ $detalle->articulo->estado }}</td>
                 </tr>
             @endforeach
         </table>
+        <strong>Cantidad: {{ count($datos['detalle_asignacion']) }} Items</strong>
     @else
         <div class="text-center">
             <h1>* ERROR *</h1>
             <p>No se pudo cargar la informacion de la Asignacion</p>
         </div>
     @endif
-    <div style="font-size: 10pt !important;margin-top:15px">
-        <p>El servidor publico queda prohibido de usar o permitir el uso de los bienes para beneficio particular o privado, prestar o transferir el bien a otro empleado publico, dañar o averiar sus caracteristicas fisicas o tecnicas, poner en riesgo el bien, ingresar o sacar bienes particulares sin autorizacion de la Unidad o Responsable de Activos Fijos.</p>
-        <p>La no obediencia a estas prohibiciones generara responsabilidades establecidas en la Ley Nro. 1178 y sus reglamentos.</p>
-        <p>En señal de conformidad y aceptacion  se firma el siguiente acta.</p>
+    <div style="font-size: 10pt !important;margin-top:15px;text-align:justify;">
+        <p>El servidor publico queda prohibido de usar o permitir el uso de los bienes para beneficio particular o
+            privado, prestar o transferir el bien a otro empleado publico, dañar o averiar sus caracteristicas fisicas o
+            tecnicas, poner en riesgo el bien, ingresar o sacar bienes particulares sin autorizacion de la Unidad o
+            Responsable de Activos Fijos.</p>
+        <p>La no obediencia a estas prohibiciones generara responsabilidades establecidas en la Ley Nro. 1178 y sus
+            reglamentos.</p>
+        <p>En señal de conformidad y aceptacion se firma el siguiente acta.</p>
     </div>
-{{-- EL QUE REALIZA ASIGNACION --}}
-    <p>RESPONSABLE ACTIVOS F</p>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <table class="text-center no-border ">
+        <tr>
+            <td class="no-border ">
+                <strong>{{$datos['responsable_activos']}}</strong>
+                <p>RESPONSABLE ACTIVOS FIJOS</p>
+            </td>
+            <td class="no-border ">
+                <strong>{{$datos['funcionario']}}</strong>
+                <p>TEC. OPERADOR</p>
+            </td>
+            <td class="no-border ">
+                <strong>{{$datos['responsable']['nombre_completo']}}</strong>
+                <p>RECIBI CONFORME</p>
+            </td>
+        </tr>
+    </table>
 
-    <p>TEC. OPERADOR</p>
-{{-- USUARIO QUE ES ASIGNADO --}}
-    <p>RECIBI CONFORME</p>
 </body>
+
 </html>

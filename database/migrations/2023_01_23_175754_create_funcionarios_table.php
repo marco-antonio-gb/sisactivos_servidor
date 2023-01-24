@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateServiciosTable extends Migration
+class CreateFuncionariosTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,11 @@ class CreateServiciosTable extends Migration
      */
     public function up()
     {
-        Schema::create('servicios', function (Blueprint $table) {
-            $table->id('idServicio');
-            $table->string('nombre')->unique();
-            $table->string('codigo')->nullable();
-            $table->string('observacion')->nullable();
-            $table->boolean('condicion')->default(true);
+        Schema::create('funcionarios', function (Blueprint $table) {
+            $table->id('idFuncionario');
+            $table->string('apellidos')->nullable();
+            $table->string('nombre')->nullable();
+            $table->string('ci')->nullable();
             $table->timestamps();
         });
     }
@@ -30,6 +29,6 @@ class CreateServiciosTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('servicios');
+        Schema::dropIfExists('funcionarios');
     }
 }
