@@ -22,7 +22,7 @@ class DetalleTransferencia extends Model
 	public function transferencias() {
 		return $this->BelongsTo(Transferencia::class, 'transferencia_id', 'idTransferencia');
 	}
-	public function articulos() {
+	public function articulo() {
 		return $this->BelongsTo(Articulo::class, 'articulo_id', 'idArticulo');
 	}
 }

@@ -25,7 +25,7 @@ class CreateReportesTable extends Migration
             $table->foreign('transferencia_id')->references('idTransferencia')->on('transferencias')->onDelete('set null');
             $table->unsignedBigInteger('baja_id')->nullable();;
             $table->foreign('baja_id')->references('idBaja')->on('bajas')->onDelete('set null');
-            $table->unsignedBigInteger('usuario_id');
+            $table->unsignedBigInteger('usuario_id')->nullable();
             $table->foreign('usuario_id')->references('idUsuario')->on('usuarios')->onDelete('set null');
             $table->timestamps();
         });

@@ -24,7 +24,7 @@ class DetalleBaja extends Model
 		return $this->BelongsTo(Baja::class, 'baja_id', 'idBaja');
 	}
 
-	public function articulos() {
+	public function articulo() {
 		return $this->BelongsTo(Articulo::class, 'articulo_id', 'idArticulo');
 	}
 }

@@ -61,5 +61,9 @@ $GLOBALS['usuario'] = 'Impreso: ';
             <p>No se pudo cargar la informacion de los Articulos</p>
         </div>
     @endif
+    <p style="text-align: justify; margin-top:1rem"><strong>Nota:</strong> Por Decreto Supremo No. 0181 capítulo III, artículo 157 numeral I y II, queda establecido que el responsable del cuidado,
+        manejo y mantenimiento de los bienes descritos en el presente inventario es el servidor público que lo recibe
+        identificado como asimismo ser utilizados para los fines específicos de su unidad, DR. EDWIN BORIS VARGAS FLORES
+        caso contrario se aplicará las sanciones que determina la Ley 1178 (SAFCO)</p>
 </body>
 </html>

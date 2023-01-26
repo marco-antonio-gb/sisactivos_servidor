@@ -1,14 +1,13 @@
 <?php
 
-namespace App\Http\Requests\Asignacion;
+namespace App\Http\Requests\Transferencia;
 
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class AsignacionStoreRequest extends FormRequest {
-
-    /**
+class TransferenciaStoreRequest extends FormRequest {
+	/**
 	 * Determine if the user is authorized to make this request.
 	 *
 	 * @return bool
@@ -25,11 +24,10 @@ class AsignacionStoreRequest extends FormRequest {
 	public function rules() {
 		return [
 			'responsable_id' => 'required',
-			'usuario_id'     => 'required',
-			'articulos'    => 'required',
-
+			'usuario_id'     => 'required'
 		];
 	}
+
 	protected function failedValidation(Validator $validator) {
 		$erros = $validator->errors()->toArray();
 		throw new HttpResponseException(response()->json([

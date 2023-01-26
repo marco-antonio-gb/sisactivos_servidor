@@ -26,4 +26,8 @@ class Baja extends Model
 	public function usuario() {
 		return $this->BelongsTo(Usuario::class, 'usuario_id', 'idUsuario');
 	}
+
+    public function detalle_baja(){
+        return $this->HasMany(DetalleBaja::class,'baja_id','idBaja')->with('articulo');
+    }
 }

@@ -33,6 +33,8 @@ Route::group(['middleware' => ['jwt.verify', 'cors']], function () {
 	Route::apiResource('articulos', ArticuloController::class)->middleware(['role:Administrador']);
 	Route::apiResource('archivos', ArchivoController::class)->middleware(['role:Administrador']);
 	Route::apiResource('funcionarios', FuncionarioController::class)->middleware(['role:Administrador']);
+	Route::apiResource('bajas', BajaController::class)->middleware(['role:Administrador']);
+	Route::apiResource('detalle-bajas', DetalleBajaController::class)->middleware(['role:Administrador']);
 	#Personas
 	Route::post('verificar-ci', 'PersonaController@VerificarCi');
 	#Usuarios

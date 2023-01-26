@@ -14,7 +14,7 @@ use App\Http\Resources\Articulo\ArticulosOptionsCollection;
 class ArticuloController extends Controller {
 	public function index() {
 		try {
-            return new ArticuloCollection(Articulo::with('orgfinanciero')->with('categoria')->with('archivo')->get());
+            return new ArticuloCollection(Articulo::where('condicion','=',true)->where('estado','!=','Malo')->with('orgfinanciero')->with('categoria')->with('archivo')->get());
 		} catch (\Exception $ex) {
 			return response()->json([
 				'success' => false,

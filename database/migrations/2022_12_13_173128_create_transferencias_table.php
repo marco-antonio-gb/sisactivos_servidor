@@ -17,6 +17,8 @@ class CreateTransferenciasTable extends Migration
             $table->boolean('estado')->default(true);
             $table->unsignedBigInteger('responsable_id')->nullable();
             $table->foreign('responsable_id')->references('idResponsable')->on('responsables')->onDelete('cascade');
+            $table->unsignedBigInteger('usuario_id')->nullable();
+			$table->foreign('usuario_id')->references('idUsuario')->on('usuarios')->onDelete('cascade');
             $table->timestamps();
         });
     }

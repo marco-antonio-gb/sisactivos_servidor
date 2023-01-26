@@ -1,14 +1,11 @@
 <?php
-
-namespace App\Http\Requests\Asignacion;
-
+namespace App\Http\Requests\Baja;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class AsignacionStoreRequest extends FormRequest {
-
-    /**
+class BajaStoreRequest extends FormRequest {
+	/**
 	 * Determine if the user is authorized to make this request.
 	 *
 	 * @return bool
@@ -16,7 +13,6 @@ class AsignacionStoreRequest extends FormRequest {
 	public function authorize() {
 		return true;
 	}
-
 	/**
 	 * Get the validation rules that apply to the request.
 	 *
@@ -24,10 +20,14 @@ class AsignacionStoreRequest extends FormRequest {
 	 */
 	public function rules() {
 		return [
-			'responsable_id' => 'required',
-			'usuario_id'     => 'required',
-			'articulos'    => 'required',
-
+			"responsable_id" => 'required',
+			"articulos"    => 'required',
+		];
+	}
+	public function messages() {
+		return [
+			'responsable_id.required' => 'El responsable es obligatorio',
+			'articulos.required'    => 'Seleccione al menos un articulo'
 		];
 	}
 	protected function failedValidation(Validator $validator) {
