@@ -36,11 +36,10 @@ $GLOBALS['usuario'] = 'Impreso: ';
     {{-- TITULO FORMULARIO --}}
     <div class="text-center mb-3">
         <p class="titulo uderline  m-1">CENTRO DE SALUD "VINTO"</p>
-        <p class="m-1">DR. EDWIN BORIS VARGAS FLORES</p>
-        <p class="m-1">Reporte de Articulos</p>
+        <h3 class="m-1">LISTA DE ARTICULOS</h3>
     </div>
     @if (count($articulos) > 0)
-        <table class=" mt-1" width="100%">
+        <table class="mt-1" width="100%">
             <tr>
                 <td class="text-center cell-title" width="115px">CODIGO</td>
                 <td class="text-center cell-title" >UNIDAD</td>
@@ -61,9 +60,46 @@ $GLOBALS['usuario'] = 'Impreso: ';
             <p>No se pudo cargar la informacion de los Articulos</p>
         </div>
     @endif
-    <p style="text-align: justify; margin-top:1rem"><strong>Nota:</strong> Por Decreto Supremo No. 0181 capítulo III, artículo 157 numeral I y II, queda establecido que el responsable del cuidado,
-        manejo y mantenimiento de los bienes descritos en el presente inventario es el servidor público que lo recibe
-        identificado como asimismo ser utilizados para los fines específicos de su unidad, DR. EDWIN BORIS VARGAS FLORES
-        caso contrario se aplicará las sanciones que determina la Ley 1178 (SAFCO)</p>
+    <p style="text-align: justify; margin-top:1rem"><strong>Nota:</strong>
+        Por Decreto Supremo No. 0181 capítulo III, artículo 157 numeral I y II, queda establecido que el responsable del cuidado,manejo y mantenimiento de los bienes descritos en el presente inventario es el servidor público que lo recibe identificado como DR. EDWIN BORIS VARGAS FLORES asimismo ser utilizados con fines espedificos de su unidad, caso contrario se aplicará las sanciones que determina la Ley 1178 (SAFCO)
+    </p>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <table class="text-center no-border ">
+            <tr>
+                <td class="no-border ">
+                    <strong>DR. EDWIN BORIS VARGAS FLORES</strong>
+                    <p>RECIBI CONFORME</p>
+                </td>
+                <td class="no-border ">
+                    <strong>INVENTARIADOR(A) G.A.M.O.</strong>
+                    <p>ENTREGUE CONFORME</p>
+                </td>
+            </tr>
+
+        </table>
+        <table class="text-center no-border mt-4">
+
+            <tr>
+                <td class="no-border ">
+                    <strong>INVENTARIADOR(A) G.A.M.O.</strong>
+                    <p>ENTREGUE CONFORME</p>
+                </td>
+                <td class="no-border ">
+                    <strong>OPERADOR(A) G.A.M.O.</strong>
+                    <p>ENTREGUE CONFORME</p>
+                </td>
+            </tr>
+        </table>
+        <div class="mt-3">
+            <span>cc/Int</span>
+        </div>
 </body>
 </html>

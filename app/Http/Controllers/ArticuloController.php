@@ -1,20 +1,20 @@
 <?php
 namespace App\Http\Controllers;
-use PDF;
+use App\Http\Requests\Articulo\ArticuloStoreRequest;
+use App\Http\Requests\Articulo\ArticuloUpdateRequest;
+use App\Http\Resources\Articulo\ArticuloCollection;
+use App\Http\Resources\Articulo\ArticuloResource;
+use App\Http\Resources\Articulo\ArticulosOptionsCollection;
 use App\Models\Archivo;
 use App\Models\Articulo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Http\Resources\Articulo\ArticuloResource;
-use App\Http\Resources\Articulo\ArticuloCollection;
-use App\Http\Requests\Articulo\ArticuloStoreRequest;
-use App\Http\Requests\Articulo\ArticuloUpdateRequest;
-use App\Http\Resources\Articulo\ArticulosOptionsCollection;
+use PDF;
 
 class ArticuloController extends Controller {
 	public function index() {
 		try {
-            return new ArticuloCollection(Articulo::where('condicion','=',true)->where('estado','!=','Malo')->with('orgfinanciero')->with('categoria')->with('archivo')->get());
+			return new ArticuloCollection(Articulo::where('condicion', '=', true)->where('estado', '!=', 'Malo')->with('orgfinanciero')->with('categoria')->with('archivo')->get());
 		} catch (\Exception $ex) {
 			return response()->json([
 				'success' => false,
@@ -29,8 +29,8 @@ class ArticuloController extends Controller {
 			$datos    = json_decode($request['data'], true);
 			$fileName = storeImage($request['foto'], $folder);
 			if ($fileName) {
-                $articulo = [
-                    'codigo'           => $datos['codigo'],
+				$articulo = [
+					'codigo'           => $datos['codigo'],
 					'unidad'           => $datos['unidad'],
 					'descripcion'      => $datos['descripcion'],
 					'costo'            => $datos['costo'],
@@ -39,13 +39,13 @@ class ArticuloController extends Controller {
 					'categoria_id'     => $datos['categoria_id'],
 					'orgfinanciero_id' => $datos['orgfinanciero_id'],
 				];
-				$last_articulo=Articulo::create($articulo)->idArticulo;
-                Archivo::create([
-                    'nombre'=>$fileName,
-                    'url' => $folder.$fileName,
-                    'articulo_id'=>$last_articulo
-                ]);
-                DB::commit();
+				$last_articulo = Articulo::create($articulo)->idArticulo;
+				Archivo::create([
+					'nombre'      => $fileName,
+					'url'         => $folder . $fileName,
+					'articulo_id' => $last_articulo,
+				]);
+				DB::commit();
 				return response()->json([
 					'success' => true,
 					'message' => 'Articulo registrado correctamente',
@@ -57,9 +57,9 @@ class ArticuloController extends Controller {
 				], 200);
 			}
 		} catch (\Exception $ex) {
-			if($fileName){
-                deleteImage('home/articulos/fotos/', $fileName);
-            }
+			if ($fileName) {
+				deleteImage('home/articulos/fotos/', $fileName);
+			}
 			DB::rollback();
 			return [
 				'success' => false,
@@ -69,9 +69,9 @@ class ArticuloController extends Controller {
 	}
 	public function show($id) {
 		try {
-            $articulo = Articulo::where('idArticulo', '=', intval($id))->with('orgfinanciero')->with('categoria')->with('archivo')->first();
+			$articulo = Articulo::where('idArticulo', '=', intval($id))->with('orgfinanciero')->with('categoria')->with('archivo')->first();
 			if ($articulo) {
-                return new ArticuloResource($articulo);
+				return new ArticuloResource($articulo);
 			} else {
 				return response()->json([
 					'success' => false,
@@ -86,28 +86,28 @@ class ArticuloController extends Controller {
 		}
 	}
 	public function update(ArticuloUpdateRequest $request, $id) {
-        try {
+		try {
 			DB::beginTransaction();
-            $articulo = [
-                'codigo'           => $request['codigo'],
-                'unidad'           => $request['unidad'],
-                'descripcion'      => $request['descripcion'],
-                'costo'            => $request['costo'],
-                'estado'           => $request['estado'],
-                'nombre'           => $request['nombre'],
-                'categoria_id'     => $request['categoria_id'],
-                'orgfinanciero_id' => $request['orgfinanciero_id'],
-            ];
-             Articulo::where('idArticulo','=',$id)->update($articulo);
-            DB::commit();
-            return response()->json([
-                'success' => true,
-                'message' => 'Articulo Actualizado correctamente',
-            ], 201);
+			$articulo = [
+				'codigo'           => $request['codigo'],
+				'unidad'           => $request['unidad'],
+				'descripcion'      => $request['descripcion'],
+				'costo'            => $request['costo'],
+				'estado'           => $request['estado'],
+				'nombre'           => $request['nombre'],
+				'categoria_id'     => $request['categoria_id'],
+				'orgfinanciero_id' => $request['orgfinanciero_id'],
+			];
+			Articulo::where('idArticulo', '=', $id)->update($articulo);
+			DB::commit();
+			return response()->json([
+				'success' => true,
+				'message' => 'Articulo Actualizado correctamente',
+			], 201);
 		} catch (\Exception $ex) {
-			if($fileName){
-                deleteImage('home/articulos/fotos/', $fileName);
-            }
+			if ($fileName) {
+				deleteImage('home/articulos/fotos/', $fileName);
+			}
 			DB::rollback();
 			return [
 				'success' => false,
@@ -117,10 +117,10 @@ class ArticuloController extends Controller {
 	}
 	public function destroy($id) {
 		try {
-			$folder = 'home/articulos/fotos/';
+			$folder   = 'home/articulos/fotos/';
 			$articulo = Articulo::find($id);
 			if ($articulo) {
-                $archivo = Archivo::where('articulo_id','=',$id)->first();
+				$archivo = Archivo::where('articulo_id', '=', $id)->first();
 				deleteImage($folder, $archivo->nombre);
 				$articulo->delete();
 				return response()->json([
@@ -140,16 +140,17 @@ class ArticuloController extends Controller {
 		}
 	}
 	public function ArticulosReporte() {
-		$articulos = Articulo::all();
-		$fileName  = "Reporte Articulos";
+		$ldate     = date('Y-m-d H:i:s');
+		$articulos = Articulo::where('condicion', '=', true)->where('estado', '!=', 'Malo')->with('orgfinanciero')->with('categoria')->with('archivo')->get();
+		$fileName  = "Reporte Articulos" . ' ' . $ldate;
 		$pdf       = PDF::loadView('articulos.articulo', array('articulos' => $articulos))->setPaper('letter', 'portrait');
 		return $pdf->stream($fileName);
 		//  return view('articulos.articulo',array('articulos' => $articulos));
 	}
-    public function articulosOptions() {
+	public function articulosOptions(Request $request) {
 		try {
-            // return Responsable::with('usuario')->with('servicio')->get();
-			return new ArticulosOptionsCollection(Articulo::where('condicion',true)->get());
+			// return Responsable::with('usuario')->with('servicio')->get();
+			return new ArticulosOptionsCollection(Articulo::where('condicion', true)->get());
 		} catch (\Exception $ex) {
 			return response()->json([
 				'success' => false,
@@ -157,5 +158,4 @@ class ArticuloController extends Controller {
 			], 404);
 		}
 	}
-
 }

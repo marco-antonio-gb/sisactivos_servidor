@@ -7,9 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 class Funcionario extends Model {
     protected $table='funcionarios';
 	protected $primaryKey = 'idFuncionario';
+	protected $casts      = ['estado' => 'boolean'];
+
 	protected $fillable   = [
 		'apellidos',
-		'nombre',
+		'nombres',
 		'ci',
+		'ci_ext',
+		'cargo',
+		'documento',
+		'estado',
 	];
 }
