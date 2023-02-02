@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use DateTimeInterface;
+use Illuminate\Support\Carbon;
+
 use Illuminate\Database\Eloquent\Model;
 
 class Transferencia extends Model
@@ -18,7 +20,9 @@ class Transferencia extends Model
         'usuario_id'
 	];
 	protected function serializeDate(DateTimeInterface $date) {
-		return $date->format('Y-m-d H:i:s');
+		return empty($date)
+		? null
+		: Carbon::parse($date)->translatedFormat('l, j \d\e F \d\e\l Y H:i:s');
 	}
 	public function responsable() {
 		return $this->BelongsTo(Responsable::class, 'responsable_id', 'idResponsable')->with('usuario');

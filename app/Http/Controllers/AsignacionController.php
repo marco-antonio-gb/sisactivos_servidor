@@ -17,13 +17,9 @@ use PDF;
 class AsignacionController extends Controller {
 	public function index() {
 		try {
-			// return Asignacion::with('usuario')->with('responsable')->get();
-			return new AsignacionCollection(Asignacion::with('usuario')->with('responsable')->get());
+			$result = Asignacion::with('usuario')->with('responsable')->get();
 			if ($result->isNotEmpty()) {
-				return response()->json([
-					'success' => true,
-					'data'    => $result,
-				], 200);
+				return new AsignacionCollection($result);
 			}
 			return response()->json([
 				'success' => false,
@@ -39,13 +35,15 @@ class AsignacionController extends Controller {
 	public function store(AsignacionStoreRequest $request) {
 		try {
 			DB::beginTransaction();
-			# Guardar asignacion
-			$asignacion = [
-				'responsable_id' => $request['responsable_id'],
-				'usuario_id'     => $request['usuario_id'],
-			];
-			#Obtenemos el ID de la Asignacion insertada
-			$asigacion_id = Asignacion::create($asignacion)->idAsignacion;
+			if($request['asignacion_id']){
+				$asigacion_id=$request['asignacion_id'];
+			}else{
+				$asignacion = [
+					'responsable_id' => $request['responsable_id'],
+					'usuario_id'     => $request['usuario_id'],
+				];
+				$asigacion_id = Asignacion::create($asignacion)->idAsignacion;
+			}
 			$articulos    = $request['articulos'];
 			foreach ($articulos as $key => $articulo) {
 				$detalle_asignacion = [
@@ -71,7 +69,7 @@ class AsignacionController extends Controller {
 	}
 	public function show($id) {
 		try {
-			$result = new AsignacionResource(Asignacion::with('responsable')->with('usuario')->where('idAsignacion', '=', $id)->first());
+			$result = new DetalleAsignacionResource(Asignacion::with('responsable')->with('usuario')->with('detalle_asignacion')->where('idAsignacion', '=', $id)->first());
 			if ($result) {
 				return response()->json([
 					'success' => true,
@@ -134,26 +132,7 @@ class AsignacionController extends Controller {
 			], 404);
 		}
 	}
-	public function AsignacionDetalle($id) {
-		try {
-			$detalle = DetalleAsignacion::where('asignacion_id', '=', $id)->with('asignacion')->with('articulo')->get();
-			if (count($detalle) > 0) {
-				return response()->json([
-					'success' => true,
-					'data'    => $detalle,
-				], 201);
-			}
-			return response()->json([
-				'success' => false,
-				'message' => 'El detalle No se pudo encontrar',
-			], 201);
-		} catch (\Exception $ex) {
-			return response()->json([
-				'success' => false,
-				'message' => $ex->getMessage(),
-			], 404);
-		}
-	}
+
 	public function AsignacionReporte(Request $request) {
 		try {
 			$asignacion  = new DetalleAsignacionResource(Asignacion::with('responsable')->with('detalle_asignacion')->with('usuario')->where('idAsignacion', '=', $request['asignacion_id'])->first());

@@ -1,6 +1,8 @@
 <?php
 namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
+
 use DateTimeInterface;
 class Servicio extends Model
 {
@@ -14,7 +16,9 @@ class Servicio extends Model
         'condicion'
     ];
     protected function serializeDate(DateTimeInterface $date) {
-		return $date->format('Y-m-d H:i:s');
+		return empty($date)
+		? null
+		: Carbon::parse($date)->translatedFormat('l, j \d\e F \d\e\l Y H:i:s');
 	}
 
 }

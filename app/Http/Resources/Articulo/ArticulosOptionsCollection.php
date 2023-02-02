@@ -14,6 +14,9 @@ class ArticulosOptionsCollection extends ResourceCollection
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        return [
+			'data'  => $this->collection,
+            'success' => count($this->collection)>0?true:false
+		];
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use DateTimeInterface;
+use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 class DetalleAsignacion extends Model {
@@ -15,13 +16,20 @@ class DetalleAsignacion extends Model {
 		'articulo_id',
 	];
 	protected function serializeDate(DateTimeInterface $date) {
-		return $date->format('Y-m-d H:i:s');
+		return empty($date)
+		? null
+		: Carbon::parse($date)->translatedFormat('l, j \d\e F \d\e\l Y H:i:s');
+	}
+	public function getFechaHoraAttribute($value) {
+		return empty($value)
+		? null
+		: Carbon::parse($value)->translatedFormat('l, j \d\e F \d\e\l Y H:i:s');
 	}
 	public function asignacion() {
 		return $this->BelongsTo(Asignacion::class, 'asignacion_id', 'idAsignacion');
 	}
 
 	public function articulo() {
-		return $this->BelongsTo(Articulo::class, 'articulo_id', 'idArticulo');
+		return $this->BelongsTo(Articulo::class, 'articulo_id', 'idArticulo')->with('orgfinanciero')->with('categoria');
 	}
 }

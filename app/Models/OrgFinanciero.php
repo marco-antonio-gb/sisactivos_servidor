@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use DateTimeInterface;
+use Illuminate\Support\Carbon;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -18,6 +19,8 @@ class OrgFinanciero extends Model
 		'condicion'
 	];
 	protected function serializeDate(DateTimeInterface $date) {
-		return $date->format('Y-m-d H:i:s');
+		return empty($date)
+		? null
+		: Carbon::parse($date)->translatedFormat('l, j \d\e F \d\e\l Y H:i:s');
 	}
 }

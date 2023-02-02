@@ -45,7 +45,7 @@ Route::group(['middleware' => ['jwt.verify', 'cors']], function () {
 	Route::post('activate-account', 'UsuarioController@ActivateAccount');
 	Route::post('suspend-account', 'UsuarioController@SuspendAccount');
 	#Asignaciones
-    Route::get('asignaciones/detalle/{idAsignacion}','AsignacionController@AsignacionDetalle');
+    // Route::get('asignaciones/detalle/{idAsignacion}','AsignacionController@AsignacionDetalle');
     Route::get('responsables-options','ResponsableController@ResponsablesOptions');
     #ARticulos
     Route::get('articulos-options','ArticuloController@articulosOptions');
@@ -54,5 +54,5 @@ Route::group(['middleware' => ['jwt.verify', 'cors']], function () {
 	Route::get('responsable-usuarios', 'ResponsableController@Usuarios');
 	Route::get('responsable-servicios', 'ResponsableController@Servicios');
 });
-Route::get('reporte-articulos', 'ArticuloController@ArticulosReporte');
+Route::post('reporte-articulos', 'ArticuloController@ArticulosReporte');
 Route::post('reporte-asignacion', 'AsignacionController@AsignacionReporte');

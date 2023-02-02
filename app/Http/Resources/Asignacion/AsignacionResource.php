@@ -1,10 +1,7 @@
 <?php
-
 namespace App\Http\Resources\Asignacion;
-
 use Illuminate\Support\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
-
 class AsignacionResource extends JsonResource
 {
     /**
@@ -21,21 +18,16 @@ class AsignacionResource extends JsonResource
 			'usuario'        => [
 				'usuario_id'      => $this->usuario->idUsuario,
 				'nombre_completo' => $this->usuario->paterno . ' ' . $this->usuario->materno . ' ' . $this->usuario->nombres,
-				// 'foto'            => $this->usuario->foto,
-				// 'cedula'          => $this->usuario->ci . ' ' . $this->usuario->ci_ext,
 				'cargo'           => $this->usuario->cargo,
-				// 'correo'          => $this->usuario->correo,
 				'estado'          => $this->usuario->estado,
 			],
 			'responsable'       => [
 				'responsable_id' => $this->responsable->idResponsable,
 				'nombre_completo' => $this->responsable->usuario->paterno . ' ' . $this->responsable->usuario->materno . ' ' . $this->responsable->usuario->nombres,
-				// 'foto'            => $this->responsable->usuario->foto,
-				// 'cedula'          => $this->responsable->usuario->ci . ' ' . $this->responsable->usuario->ci_ext,
 				'cargo'           => $this->responsable->usuario->cargo,
-				// 'correo'          => $this->responsable->usuario->correo,
 				'estado'          => $this->responsable->usuario->estado,
-			]
+			],
+			'detalle_asignancion_count'=>$this->detalle_asignacion->count()
 		];
 	}
 	public function with($request) {

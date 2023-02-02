@@ -15,7 +15,6 @@ class ResponsableController extends Controller {
 
 	public function index() {
 		try {
-            // return  Responsable::with('usuario')->with('servicio')->get();
             return new ResponsableCollection(Responsable::with('usuario')->with('servicio')->get());
 
 			if ($result->isNotEmpty()) {
@@ -126,7 +125,6 @@ class ResponsableController extends Controller {
 	 */
 	public function ResponsablesOptions() {
 		try {
-            // return Responsable::with('usuario')->with('servicio')->get();
 			return new ResponsableOptionsCollection(Responsable::with('usuario')->with('servicio')->where('condicion',true)->get());
 		} catch (\Exception $ex) {
 			return response()->json([

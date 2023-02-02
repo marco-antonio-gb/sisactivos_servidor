@@ -14,7 +14,7 @@ use PDF;
 class ArticuloController extends Controller {
 	public function index() {
 		try {
-			return new ArticuloCollection(Articulo::where('condicion', '=', true)->where('estado', '!=', 'Malo')->with('orgfinanciero')->with('categoria')->with('archivo')->get());
+			return new ArticuloCollection(Articulo::where('estado', '!=', 'Malo')->with('orgfinanciero')->with('categoria')->with('archivo')->get());
 		} catch (\Exception $ex) {
 			return response()->json([
 				'success' => false,

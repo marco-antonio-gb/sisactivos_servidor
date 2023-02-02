@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use DateTimeInterface;
+use Illuminate\Support\Carbon;
 
 class DetalleBaja extends Model
 {
@@ -17,7 +18,9 @@ class DetalleBaja extends Model
         'articulo_id',
 	];
 	protected function serializeDate(DateTimeInterface $date) {
-		return $date->format('Y-m-d H:i:s');
+		return empty($date)
+		? null
+		: Carbon::parse($date)->translatedFormat('l, j \d\e F \d\e\l Y H:i:s');
 	}
 
 	public function bajas() {
