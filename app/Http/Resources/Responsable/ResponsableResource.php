@@ -13,23 +13,28 @@ class ResponsableResource extends JsonResource {
 	 * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
 	 */
 	public function toArray($request) {
+	 
 		return [
-			'responsable_id' => $this->idResponsable,
-			'estado'         => $this->condicion,
-			'asignado'       => Carbon::parse($this->created_at, 'America/La_Paz')->translatedFormat('l, j \d\e F \d\e\l Y, H:i:s'),
-			'usuario'        => [
-				'usuario_id'      => $this->usuario->idUsuario,
-				'nombre_completo' => $this->usuario->paterno . ' ' . $this->usuario->materno . ' ' . $this->usuario->nombres,
-				'foto'            => $this->usuario->foto,
-				'cedula'          => $this->usuario->ci . ' ' . $this->usuario->ci_ext,
+			'responsable' => [
+				'responsable_id'  => $this->idResponsable,
+				'estado'         => $this->condicion,
+				'asignado'       => $this->created_at,
+				'nombre_completo' => $this->usuario->nombres . ' ' . $this->usuario->paterno . ' ' . $this->usuario->materno,
 				'cargo'           => $this->usuario->cargo,
-				'correo'          => $this->usuario->correo,
 				'estado'          => $this->usuario->estado,
+				'avatar_letter'   => $this->usuario->avatar_letter,
+				'avatar_color'    => $this->usuario->avatar_color,
+				'cedula'              => $this->usuario->ci .' '.$this->usuario->ci_ext,
+				'telefono'        => $this->usuario->telefono,
+				'foto'            => $this->usuario->foto,
+				'correo'          => $this->usuario->correo,
 			],
-			'servicio'       => [
-				'servicio_id' => $this->servicio->idServicio,
-				'nombre'      => $this->servicio->nombre,
+			'servicio'=> [
+				 'servicio_id'=>$this->servicio->idServicio,
+				 'nombre'=>$this->servicio->nombre
 			],
+			'total_asignaciones'=>$this->asignaciones->count(),
+			'historial_asignaciones'=>$this->asignaciones
 		];
 	}
 	public function with($request) {

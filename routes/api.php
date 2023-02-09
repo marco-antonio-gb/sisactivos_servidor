@@ -35,6 +35,8 @@ Route::group(['middleware' => ['jwt.verify', 'cors']], function () {
 	Route::apiResource('funcionarios', FuncionarioController::class)->middleware(['role:Administrador']);
 	Route::apiResource('bajas', BajaController::class)->middleware(['role:Administrador']);
 	Route::apiResource('detalle-bajas', DetalleBajaController::class)->middleware(['role:Administrador']);
+	Route::post('set-theme', 'UsuarioController@SetTheme');
+
 	#Personas
 	Route::post('verificar-ci', 'PersonaController@VerificarCi');
 	#Usuarios
@@ -45,14 +47,17 @@ Route::group(['middleware' => ['jwt.verify', 'cors']], function () {
 	Route::post('activate-account', 'UsuarioController@ActivateAccount');
 	Route::post('suspend-account', 'UsuarioController@SuspendAccount');
 	#Asignaciones
-    // Route::get('asignaciones/detalle/{idAsignacion}','AsignacionController@AsignacionDetalle');
     Route::get('responsables-options','ResponsableController@ResponsablesOptions');
+	Route::get('asignaciones-responsables','AsignacionController@AsignacionesResponsables');
+	Route::get('asignaciones-responsable/{idResponsable}','AsignacionController@AsignacionesResponsable');
     #ARticulos
     Route::get('articulos-options','ArticuloController@articulosOptions');
 	#Responsable
 	Route::get('responsable-baja/{id}', 'ResponsableController@bajaResponsable');
 	Route::get('responsable-usuarios', 'ResponsableController@Usuarios');
 	Route::get('responsable-servicios', 'ResponsableController@Servicios');
+	#Funcionarios
+	Route::post('status-funcionario', 'FuncionarioController@StatusFuncionario');
 });
 Route::post('reporte-articulos', 'ArticuloController@ArticulosReporte');
 Route::post('reporte-asignacion', 'AsignacionController@AsignacionReporte');

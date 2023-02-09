@@ -11,9 +11,7 @@ use App\Http\Requests\UsuarioStoreRequest;
 use App\Http\Requests\UsuarioUpdateRequest;
 use App\Http\Requests\UsuarioPictureRequest;
 class UsuarioController extends Controller {
-	// public function __construct() {
-	// 	$this->middleware('jwt.auth');
-	// }
+
 	public function index() {
 		try {
 			$result = Usuario::select('nombres', 'idUsuario AS usuario_id', DB::raw("CONCAT(IFNULL(paterno,''),' ',IFNULL(materno,''),' ',IFNULL(nombres,'')) AS nombre_completo"), DB::raw("CONCAT(IFNULL(ci,''),' ',IFNULL(ci_ext,'')) AS cedula"), 'cargo', 'telefono', 'foto', 'estado', 'correo', 'created_at')->get();
@@ -35,7 +33,7 @@ class UsuarioController extends Controller {
 			], 404);
 		}
 	}
-	// Crear usuario
+
 	public function store(UsuarioStoreRequest $request) {
 		try {
 			DB::beginTransaction();
@@ -55,6 +53,8 @@ class UsuarioController extends Controller {
 				'correo'    => $datos['correo'],
 				'foto'      => $imageName,
 				"password"  => bcrypt($datos['password']),
+				"settings"  => json_encode($request['settings']),
+
 			];
 			$user = Usuario::create($usuario);
 			$user->assignRole($datos['roles']);
@@ -107,6 +107,8 @@ class UsuarioController extends Controller {
 			$user->telefono  = $request['telefono'];
 			$user->cargo     = $request['cargo'];
 			$user->correo    = $request['correo'];
+			$user->settings = json_encode($request['settings']);
+
 			$user->save();
 			$roles = $request['roles'];
 			foreach ($roles as $key => $value) {
@@ -310,6 +312,26 @@ class UsuarioController extends Controller {
 			return response()->json([
 				'success' => false,
 				'message' => $ex->getMessage(),
+			], 404);
+		}
+	}
+	public function SetTheme(Request $request) {
+
+		try {
+			$id                              = auth()->user()->idUsuario;
+			$usuario                         = Usuario::select('settings')->where('idUsuario', '=', $id)->first();
+			$theme                           = json_decode(json_encode($usuario), true);
+
+			$theme['settings']['dark_theme'] = $request['dark_theme'];
+			Usuario::where('idUsuario', '=', $id)->update(['settings' => json_encode($theme['settings'])]);
+			return response()->json([
+				'success' => true,
+				'message' => "Color de tema actualizado",
+			], 201);
+		} catch (\Exception $ex) {
+			return response()->json([
+				'success' => false,
+				'error'   => $ex->getMessage(),
 			], 404);
 		}
 	}

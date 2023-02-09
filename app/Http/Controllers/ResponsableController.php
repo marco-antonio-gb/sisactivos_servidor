@@ -15,13 +15,9 @@ class ResponsableController extends Controller {
 
 	public function index() {
 		try {
-            return new ResponsableCollection(Responsable::with('usuario')->with('servicio')->get());
-
+			$result = Responsable::with('asignaciones')->with('servicio')->with('usuario')->whereHas('asignaciones')->get();
 			if ($result->isNotEmpty()) {
-				return response()->json([
-					'success' => true,
-					'data'    => $result,
-				], 200);
+				return new ResponsableCollection($result);
 			}
 			return response()->json([
 				'success' => false,
@@ -59,8 +55,9 @@ class ResponsableController extends Controller {
 
 	public function show($id) {
 		try {
-			$result = Responsable::with('usuario')->with('servicio')->where('idResponsable', '=', $id)->first();
-
+ 
+			$result = Responsable::with('asignaciones')->with('servicio')->with('usuario')->whereHas('asignaciones')->where('idResponsable',$id)->get();
+			return $result;
 			if ($result) {
 				return response()->json([
 					'success' => true,

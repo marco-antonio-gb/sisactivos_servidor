@@ -17,6 +17,8 @@ class UsuariosTableSeeder extends Seeder {
 			"cargo"     => "Ingeniero de Sistemas",
 			"password"  => bcrypt('israel@gmail.com'),
 			"estado"    => true,
+			"settings"  => '{"dark_theme": false}',
+
 		]);
         Usuario::factory()->count(6)->create();
 

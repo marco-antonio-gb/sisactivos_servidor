@@ -67,12 +67,14 @@ class AuthController extends Controller {
 	 */
 	public function userProfile() {
 		$id           = auth()->user()->idUsuario;
-		$usuario      = Usuario::select('idUsuario', 'paterno', 'materno', 'nombres', 'cargo', 'estado', 'foto')->where('idUsuario', '=', $id)->first();
+		$usuario      = Usuario::select('idUsuario','settings', 'paterno', 'materno', 'nombres', 'cargo', 'estado', 'foto')->where('idUsuario', '=', $id)->first();
 		$usaurio_data = [
 			'usuario_id'      => $usuario['idUsuario'],
 			'nombre_completo' => $usuario['nombres'] . ' ' . $usuario['paterno'] . ' ' . $usuario['materno'],
 			'cargo'           => $usuario['cargo'],
 			'estado'          => $usuario['estado'] ? 'Activado' : 'Desactivado',
+			'settings'      =>$usuario['settings'],
+
 			'roles'           => getAllRoles($id),
 			'permisos'        => getAllPermissions($id),
 			'foto'            => $usuario['foto'],

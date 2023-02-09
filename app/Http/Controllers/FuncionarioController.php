@@ -9,7 +9,6 @@ use App\Http\Resources\Funcionario\FuncionarioCollection;
 use App\Http\Requests\Funcionario\FuncionarioStoreRequest;
 use App\Http\Requests\Funcionario\FuncionarioUpdateRequest;
 use App\Http\Resources\Funcionario\FuncionarioShowResource;
-
 class FuncionarioController extends Controller {
 	/**
 	 * Display a listing of the resource.
@@ -18,7 +17,7 @@ class FuncionarioController extends Controller {
 	 */
 	public function index() {
 		try {
-			$result = Funcionario::where('estado', true)->get();
+			$result = Funcionario::all();
 			if (count($result) > 0) {
 				return new FuncionarioCollection($result);
 			} else {
@@ -106,29 +105,31 @@ class FuncionarioController extends Controller {
 			];
 		}
 	}
-	/**
-	 * Remove the specified resource from storage.
-	 *
-	 * @param  int  $id
-	 * @return \Illuminate\Http\Response
-	 */
 	public function destroy($id) {
+		DB::beginTransaction();
+        try {
+            $funcionario = Funcionario::find($id);
+            if(!$funcionario) return response()->json(['message' => 'No se encontro el recurso solicitado','success' => false], 404);
+            $funcionario->delete();
+            DB::commit();
+            return response()->json(['message' => 'Registro eliminado correctamente','success' => true], 200);
+        } catch(\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => $e->getMessage(),'success' => false], 500);
+        }
+	}
+	public function StatusFuncionario(Request $request){
 		try {
-			$funcionario = Funcionario::findOrFail($id);
-			if ($funcionario->deleteOrFail() === false) {
-				return response()->json([
-					'success' => false,
-					'message' => 'No se pudo eliminar el registro.',
-				], 400);
-			}
+			$currentStatus  = Funcionario::where('idFuncionario','=',$request['funcionario_id'])->first();
+			$currentStatus->update(['estado'=>!$request['status']]);
 			return response()->json([
 				'success' => true,
-				'message' => 'Registro eliminado correctamente',
-			], 201);
+				'message' => "El estado del funcionario ha cambiado",
+			], 200);
 		} catch (\Exception $ex) {
 			return response()->json([
 				'success' => false,
-				'message' => "No se encontro el recurso solicitado",
+				'message' => "No se puede encontrar al funcionario",
 			], 404);
 		}
 	}

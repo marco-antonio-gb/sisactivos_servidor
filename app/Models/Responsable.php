@@ -20,19 +20,14 @@ class Responsable extends Model {
 		return empty($date)
 		? null
 		: Carbon::parse($date)->translatedFormat('l, j \d\e F \d\e\l Y H:i:s');
-	}
-	// public function getCreatedAtAttribute($value) {
-	//     return empty($value)
-	//     ? null
-	//     : Carbon::parse($value)->translatedFormat('l, j \d\e F \d\e\l Y H:i:s');
-	// }
+	}	
 	public function usuario() {
 		return $this->BelongsTo(Usuario::class, 'usuario_id', 'idUsuario');
 	}
 	public function servicio() {
 		return $this->BelongsTo(Servicio::class, 'servicio_id', 'idServicio');
 	}
-	public function asignacion() {
-		return $this->HasMany(Asignacion::class, 'responsable_id', 'idResponsable');
+	public function asignaciones() {
+		return $this->HasMany(Asignacion::class, 'responsable_id', 'idResponsable')->with('usuario')->with('detalle_asignacion');
 	}
 }

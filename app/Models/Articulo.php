@@ -32,10 +32,10 @@ class Articulo extends Model {
 		? null
 		: Carbon::parse($date)->translatedFormat('l, j \d\e F \d\e\l Y H:i:s');
 	}
-	public function getFechaRegistroAttribute($value) {
-		return empty($value)
+	public function getFechaRegistroAttribute($date) {
+		return empty($date)
 		? null
-		: Carbon::parse($value)->translatedFormat('j \d\e F \d\e\l Y ');
+		: Carbon::parse($date)->translatedFormat('j \d\e F \d\e\l Y ');
 	}
 
     public function orgfinanciero() {

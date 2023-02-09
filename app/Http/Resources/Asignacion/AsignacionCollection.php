@@ -15,6 +15,7 @@ class AsignacionCollection extends ResourceCollection
     public function toArray($request)
     {
         return [
+            
 			'data'  => $this->collection,
             'success' => count($this->collection)>0?true:false
 		];

@@ -1,33 +1,34 @@
 <?php
 namespace App\Http\Resources\Asignacion;
-use Illuminate\Support\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
-class AsignacionResource extends JsonResource
-{
-    /**
-     * Transform the resource into an array.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
-     */
-    public function toArray($request) {
+
+class AsignacionResource extends JsonResource {
+	/**
+	 * Transform the resource into an array.
+	 *
+	 * @param  \Illuminate\Http\Request  $request
+	 * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
+	 */
+	public function toArray($request) {
 		return [
-			'asignacion_id' => $this->idAsignacion,
-			'estado'         => $this->estado,
-			'asignado'       => Carbon::parse($this->created_at, 'America/La_Paz')->translatedFormat('l, j \d\e F \d\e\l Y, H:i:s'),
-			'usuario'        => [
-				'usuario_id'      => $this->usuario->idUsuario,
-				'nombre_completo' => $this->usuario->paterno . ' ' . $this->usuario->materno . ' ' . $this->usuario->nombres,
+			'responsable' => [
+				'responsable_id'  => $this->idResponsable,
+				'nombre_completo' => $this->usuario->nombres . ' ' . $this->usuario->paterno . ' ' . $this->usuario->materno,
 				'cargo'           => $this->usuario->cargo,
 				'estado'          => $this->usuario->estado,
+				'avatar_letter'   => $this->usuario->avatar_letter,
+				'avatar_color'    => $this->usuario->avatar_color,
+				'cedula'              => $this->usuario->ci .' '.$this->usuario->ci_ext,
+				'telefono'        => $this->usuario->telefono,
+				'foto'            => $this->usuario->foto,
+				'correo'          => $this->usuario->correo,
 			],
-			'responsable'       => [
-				'responsable_id' => $this->responsable->idResponsable,
-				'nombre_completo' => $this->responsable->usuario->paterno . ' ' . $this->responsable->usuario->materno . ' ' . $this->responsable->usuario->nombres,
-				'cargo'           => $this->responsable->usuario->cargo,
-				'estado'          => $this->responsable->usuario->estado,
+			'servicio'=> [
+				 'servicio_id'=>$this->servicio->idServicio,
+				 'nombre'=>$this->servicio->nombre
 			],
-			'detalle_asignancion_count'=>$this->detalle_asignacion->count()
+			'total_asignaciones'=>$this->asignaciones->count(),
+			'historial_asignaciones'=>$this->asignaciones
 		];
 	}
 	public function with($request) {

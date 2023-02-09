@@ -27,7 +27,7 @@ class CreateUsuariosTable extends Migration
             $table->string('correo')->unique();
             $table->string('password');
             $table->boolean('estado')->nullable()->default(true);
-
+            $table->json('settings');
             $table->timestamps();
 
         });

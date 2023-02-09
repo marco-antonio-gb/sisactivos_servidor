@@ -1,23 +1,25 @@
 <?php
 namespace App\Http\Controllers;
-use App\Http\Requests\Asignacion\AsignacionStoreRequest;
-use App\Http\Requests\Asignacion\AsignacionUpdateRequest;
-use App\Http\Resources\Asignacion\AsignacionCollection;
-use App\Http\Resources\Asignacion\AsignacionResource;
-use App\Http\Resources\DetalleAsignacion\DetalleAsignacionResource;
+use PDF;
 use App\Models\Articulo;
 use App\Models\Asignacion;
-use App\Models\DetalleAsignacion;
 use App\Models\Funcionario;
-use Illuminate\Database\QueryException;
+use App\Models\Responsable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use App\Models\DetalleAsignacion;
 use Illuminate\Support\Facades\DB;
-use PDF;
+use Illuminate\Database\QueryException;
+use App\Http\Resources\Asignacion\AsignacionCollection;
+use App\Http\Resources\Responsable\ResponsableResource;
+use App\Http\Requests\Asignacion\AsignacionStoreRequest;
+use App\Http\Requests\Asignacion\AsignacionUpdateRequest;
+use App\Http\Resources\DetalleAsignacion\DetalleAsignacionResource;
+
 class AsignacionController extends Controller {
 	public function index() {
 		try {
-			$result = Asignacion::with('usuario')->with('responsable')->get();
+			$result = Asignacion::with('responsable')->with('usuario')->with('detalle_asignacion')->first();
 			if ($result->isNotEmpty()) {
 				return new AsignacionCollection($result);
 			}
@@ -35,16 +37,16 @@ class AsignacionController extends Controller {
 	public function store(AsignacionStoreRequest $request) {
 		try {
 			DB::beginTransaction();
-			if($request['asignacion_id']){
-				$asigacion_id=$request['asignacion_id'];
-			}else{
+			if ($request['asignacion_id']) {
+				$asigacion_id = $request['asignacion_id'];
+			} else {
 				$asignacion = [
 					'responsable_id' => $request['responsable_id'],
 					'usuario_id'     => $request['usuario_id'],
 				];
 				$asigacion_id = Asignacion::create($asignacion)->idAsignacion;
 			}
-			$articulos    = $request['articulos'];
+			$articulos = $request['articulos'];
 			foreach ($articulos as $key => $articulo) {
 				$detalle_asignacion = [
 					"asignacion_id" => $asigacion_id,
@@ -70,6 +72,7 @@ class AsignacionController extends Controller {
 	public function show($id) {
 		try {
 			$result = new DetalleAsignacionResource(Asignacion::with('responsable')->with('usuario')->with('detalle_asignacion')->where('idAsignacion', '=', $id)->first());
+			return $result;
 			if ($result) {
 				return response()->json([
 					'success' => true,
@@ -133,11 +136,20 @@ class AsignacionController extends Controller {
 		}
 	}
 
+
+	
 	public function AsignacionReporte(Request $request) {
 		try {
-			$asignacion  = new DetalleAsignacionResource(Asignacion::with('responsable')->with('detalle_asignacion')->with('usuario')->where('idAsignacion', '=', $request['asignacion_id'])->first());
+			// $asignacion  = new DetalleAsignacionResource(Asignacion::with('responsable')->with('detalle_asignacion')->with('usuario')->where('idAsignacion', '=', $request['asignacion_id'])->first());
+			$asignacion = Asignacion::with('responsable')->with('detalle_asignacion')->with('usuario')->where('idAsignacion', '=', $request['asignacion_id'])->first();
 			$fileName    = "Reporte Asignacion";
-			$funcionario = Funcionario::where('idFuncionario', '=', $request['funcionario'])->first();
+			$funcionario = Funcionario::where('estado', '=', true)->where('documento','=','asignacion')->first();
+			if(!$funcionario){
+				return response()->json([
+					'success' => false,
+					'message' => "No existe un funcionario seleccionado",
+				], 404);
+			}
 			$printData   = [
 				'asignacion_id'       => $asignacion->idAsignacion,
 				'estado'              => $asignacion->estado,
@@ -154,9 +166,10 @@ class AsignacionController extends Controller {
 				'responsable_activos' => strtoupper($asignacion->usuario->paterno . ' ' . $asignacion->usuario->materno . ' ' . $asignacion->usuario->nombres),
 				'funcionario'         => strtoupper($funcionario->apellidos . ' ' . $funcionario->nombre),
 			];
-			$time = date("d-m-Y") . "-" . time();
+		 
+			$time         = date("d-m-Y") . "-" . time();
 			$fileName     = $time . '-' . slugify($printData['unidad']) . '.pdf';
-			$pdf          = PDF::loadView('asignacion.asignacion', array('datos' => $printData))->setPaper('letter', 'landscape');
+			$pdf          = PDF::loadView('asignacion.asignacion', array( 'datos' => $printData ))->setPaper('letter', 'landscape');
 			$originalPath = '/home/asignaciones/reportes/';
 			$urlFile      = public_path() . $originalPath;
 			$pdf->save($urlFile . $fileName);
@@ -167,5 +180,41 @@ class AsignacionController extends Controller {
 				'message' => $ex->getMessage(),
 			], 404);
 		}
+	}
+	public function AsignacionesResponsables() {
+		try {
+			$result = Responsable::with('asignaciones')->with('servicio')->with('usuario')->whereHas('asignaciones')->get();
+			if ($result->isNotEmpty()) {
+				return new AsignacionCollection($result);
+			}
+			return response()->json([
+				'success' => false,
+				'message' => 'No existen resultados',
+			], 200);
+		} catch (\Exception $ex) {
+			return response()->json([
+				'success' => false,
+				'message' => $ex->getMessage(),
+			], 404);
+		}
+
+	}
+	public function AsignacionesResponsable($idResponsable) {
+		try {
+			$result = Responsable::with('asignaciones')->with('servicio')->with('usuario')->whereHas('asignaciones')->where('idResponsable', $idResponsable)->first();
+			if ($result) {
+				return new ResponsableResource($result);
+			}
+			return response()->json([
+				'success' => false,
+				'message' => 'No existen resultados',
+			], 200);
+		} catch (\Exception $ex) {
+			return response()->json([
+				'success' => false,
+				'message' => $ex->getMessage(),
+			], 404);
+		}
+
 	}
 }
