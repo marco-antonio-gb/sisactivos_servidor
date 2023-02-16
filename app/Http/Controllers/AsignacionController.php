@@ -141,8 +141,10 @@ class AsignacionController extends Controller {
 	public function AsignacionReporte(Request $request) {
 		try {
 			// $asignacion  = new DetalleAsignacionResource(Asignacion::with('responsable')->with('detalle_asignacion')->with('usuario')->where('idAsignacion', '=', $request['asignacion_id'])->first());
+
 			$asignacion = Asignacion::with('responsable')->with('detalle_asignacion')->with('usuario')->where('idAsignacion', '=', $request['asignacion_id'])->first();
 			$fileName    = "Reporte Asignacion";
+
 			$funcionario = Funcionario::where('estado', '=', true)->where('documento','=','asignacion')->first();
 			if(!$funcionario){
 				return response()->json([

@@ -27,12 +27,13 @@ class UsuarioFactory extends Factory {
 			"ci"        => $this->faker->randomNumber(7),
 			"ci_ext"    => $this->faker->randomElement(["OR", "LP", "PT", "CB", "CH", "TJ", "SC", "BN", "PD"]),
 			"foto"      => NULL,
-			"telefono"  => $this->faker->tollFreePhoneNumber,
+			"telefono"  => $this->faker->phoneNumber,
 			"correo"    => $this->faker->email,
 			"direccion" => $this->faker->address,
-			"cargo"     => $this->faker->jobTitle,
+			"cargo"     => $this->faker->catchPhrase,
 			"password"  => bcrypt('password'),
 			"estado"    => true,
+			"settings"  => '{"dark_theme": false}',
 		];
 	}
 }

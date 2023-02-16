@@ -66,26 +66,34 @@ class AuthController extends Controller {
 	 * @return \Illuminate\Http\JsonResponse
 	 */
 	public function userProfile() {
-		$id           = auth()->user()->idUsuario;
-		$usuario      = Usuario::select('idUsuario','settings', 'paterno', 'materno', 'nombres', 'cargo', 'estado', 'foto')->where('idUsuario', '=', $id)->first();
-		$usaurio_data = [
-			'usuario_id'      => $usuario['idUsuario'],
-			'nombre_completo' => $usuario['nombres'] . ' ' . $usuario['paterno'] . ' ' . $usuario['materno'],
-			'cargo'           => $usuario['cargo'],
-			'estado'          => $usuario['estado'] ? 'Activado' : 'Desactivado',
-			'settings'      =>$usuario['settings'],
+		$authenticated = auth()->check();
+		if($authenticated){
+			$id           = auth()->user()->idUsuario;
+			$usuario      = Usuario::select('idUsuario','settings', 'paterno', 'materno', 'nombres', 'cargo', 'estado', 'foto')->where('idUsuario', '=', $id)->first();
+			$usaurio_data = [
+				'usuario_id'      => $usuario['idUsuario'],
+				'nombre_completo' => $usuario['nombres'] . ' ' . $usuario['paterno'] . ' ' . $usuario['materno'],
+				'cargo'           => $usuario['cargo'],
+				'estado'          => $usuario['estado'] ? 'Activado' : 'Desactivado',
+				'settings'      =>$usuario['settings'],
 
-			'roles'           => getAllRoles($id),
-			'permisos'        => getAllPermissions($id),
-			'foto'            => $usuario['foto'],
-			'user_name'       => $usuario['nombres'],
-			'avatar_letter'   => SKU_gen($usuario['nombres']),
-			'avatar_color'    => getcolorAvatar($usuario['nombres']),
-		];
+				'roles'           => getAllRoles($id),
+				'permisos'        => getAllPermissions($id),
+				'foto'            => $usuario['foto'],
+				'user_name'       => $usuario['nombres'],
+				'avatar_letter'   => SKU_gen($usuario['nombres']),
+				'avatar_color'    => getcolorAvatar($usuario['nombres']),
+			];
+			return response()->json([
+				'success' => true,
+				'data'    => $usaurio_data,
+			]);
+		}
 		return response()->json([
-			'success' => true,
-			'data'    => $usaurio_data,
-		]);
+			'success' => false,
+			'message'    => 'Su token ha expirado',
+		], 401);
+		
 	}
 	/**
 	 * Log the user out (Invalidate the token).

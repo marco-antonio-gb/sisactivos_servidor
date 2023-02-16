@@ -56,8 +56,11 @@ Route::group(['middleware' => ['jwt.verify', 'cors']], function () {
 	Route::get('responsable-baja/{id}', 'ResponsableController@bajaResponsable');
 	Route::get('responsable-usuarios', 'ResponsableController@Usuarios');
 	Route::get('responsable-servicios', 'ResponsableController@Servicios');
+	Route::post('cambiar-servicios', 'ResponsableController@CambiarServicios');
 	#Funcionarios
 	Route::post('status-funcionario', 'FuncionarioController@StatusFuncionario');
+	#Bajas
+	Route::post('articulo-responsable','BajaController@getArticuloResponsable');
 });
 Route::post('reporte-articulos', 'ArticuloController@ArticulosReporte');
 Route::post('reporte-asignacion', 'AsignacionController@AsignacionReporte');

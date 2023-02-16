@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Usuario;
 use App\Models\Servicio;
 use App\Models\Responsable;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\Responsable\ResponsableCollection;
 use App\Http\Requests\Responsable\ResponsableStoreRequest;
@@ -15,7 +16,8 @@ class ResponsableController extends Controller {
 
 	public function index() {
 		try {
-			$result = Responsable::with('asignaciones')->with('servicio')->with('usuario')->whereHas('asignaciones')->get();
+			// $result = Responsable::with('asignaciones')->with('servicio')->with('usuario')->whereHas('asignaciones')->get();
+			$result = Responsable::with('servicio')->with('usuario')->get();
 			if ($result->isNotEmpty()) {
 				return new ResponsableCollection($result);
 			}
@@ -56,7 +58,7 @@ class ResponsableController extends Controller {
 	public function show($id) {
 		try {
  
-			$result = Responsable::with('asignaciones')->with('servicio')->with('usuario')->whereHas('asignaciones')->where('idResponsable',$id)->get();
+			$result = Responsable::with('asignaciones')->with('servicio')->with('usuario')->whereHas('asignaciones')->where('idResponsable',$id)->first();
 			return $result;
 			if ($result) {
 				return response()->json([
@@ -120,6 +122,7 @@ class ResponsableController extends Controller {
 	 *  ------------------
 	 *
 	 */
+	
 	public function ResponsablesOptions() {
 		try {
 			return new ResponsableOptionsCollection(Responsable::with('usuario')->with('servicio')->where('condicion',true)->get());
@@ -180,4 +183,29 @@ class ResponsableController extends Controller {
 			], 404);
 		}
 	}
+	public function CambiarServicios(Request $request) {
+		try {
+			$responsable = [
+                'usuario_id'=>$request['responsable_id'],
+                'servicio_id'=>$request['servicio_id']
+            ];
+            $update= Responsable::where('idResponsable', '=', $request['responsable_id'])->update($responsable);
+			if ($update) {
+				return response()->json([
+					'success' => true,
+					'message' => 'Responsable Actualizado correctamente',
+				], 201);
+			}
+			return response()->json([
+				'success' => false,
+				'message' => 'El Responsable No se pudo actualizar',
+			], 201);
+		} catch (\Exception $ex) {
+			return response()->json([
+				'success' => false,
+				'message' => $ex->getMessage(),
+			], 404);
+		}
+	}
+
 }

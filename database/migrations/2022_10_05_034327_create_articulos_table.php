@@ -22,7 +22,8 @@ class CreateArticulosTable extends Migration
             $table->string('imagen')->nullable();
             $table->decimal('costo',11,2)->default(0.00);
             $table->string('estado');
-            $table->boolean('condicion')->default(true);
+            $table->boolean('asignado')->default(false);
+            $table->boolean('baja')->default(false);
             $table->timestampTz('fecha_registro')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->unsignedBigInteger('categoria_id')->nullable();
             $table->foreign('categoria_id')->references('idCategoria')->on('categorias')->onDelete('cascade');

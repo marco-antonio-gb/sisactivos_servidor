@@ -33,8 +33,8 @@ class ResponsableResource extends JsonResource {
 				 'servicio_id'=>$this->servicio->idServicio,
 				 'nombre'=>$this->servicio->nombre
 			],
-			'total_asignaciones'=>$this->asignaciones->count(),
-			'historial_asignaciones'=>$this->asignaciones
+			// 'total_asignaciones'=>$this->asignaciones->count(),
+			// 'historial_asignaciones'=>$this->asignaciones
 		];
 	}
 	public function with($request) {

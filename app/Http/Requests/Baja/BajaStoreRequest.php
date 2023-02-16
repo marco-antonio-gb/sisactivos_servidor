@@ -21,13 +21,17 @@ class BajaStoreRequest extends FormRequest {
 	public function rules() {
 		return [
 			"responsable_id" => 'required',
-			"articulos"    => 'required',
+			"articulo_id"    => 'required',
+			"motivo"    => 'required',
+			"informe_baja"    => 'required',
 		];
 	}
 	public function messages() {
 		return [
 			'responsable_id.required' => 'El responsable es obligatorio',
-			'articulos.required'    => 'Seleccione al menos un articulo'
+			'articulo_id.required'    => 'Seleccione al menos un articulo',
+			'motivo.required'    => 'Ingrese el motivo de la baja',
+			'informe_baja.required'    => 'Ingrese un informe de baja'
 		];
 	}
 	protected function failedValidation(Validator $validator) {

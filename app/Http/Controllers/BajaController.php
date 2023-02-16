@@ -1,14 +1,13 @@
 <?php
-
 namespace App\Http\Controllers;
-
-use App\Models\Baja;
+use App\Http\Requests\Baja\BajaStoreRequest;
+use App\Http\Resources\Baja\BajaCollection;
 use App\Models\Articulo;
+use App\Models\Baja;
 use App\Models\DetalleBaja;
+use App\Models\Responsable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Http\Resources\Baja\BajaCollection;
-use App\Http\Requests\Baja\BajaStoreRequest;
 
 class BajaController extends Controller {
 	/**
@@ -26,14 +25,13 @@ class BajaController extends Controller {
 				'success' => false,
 				'message' => 'No existen resultados',
 			], 200);
-		} catch (\Exception $ex) {
+		} catch (\Exception$ex) {
 			return response()->json([
 				'success' => false,
 				'message' => $ex->getMessage(),
 			], 404);
 		}
 	}
-
 	/**
 	 * Store a newly created resource in storage.
 	 *
@@ -41,31 +39,33 @@ class BajaController extends Controller {
 	 * @return \Illuminate\Http\Response
 	 */
 	public function store(BajaStoreRequest $request) {
+		/**
+		 * TODO: Validar Articulo y responsable
+		 * TODO: Actualizar estado de Articulo { condicion = false }
+		 */
 		try {
 			DB::beginTransaction();
-
-			$baja = [
+			$usuario_id = auth()->user()->idUsuario;
+			$baja       = [
 				'responsable_id' => $request['responsable_id'],
-				'usuario_id'     => $request['usuario_id'],
+				'usuario_id'     => $usuario_id,
 			];
 			$last_baja_id = Baja::create($baja)->idBaja;
-			$articulos    = $request['articulos'];
-			foreach ($articulos as $key => $articulo) {
-				$detalle_baja = [
-					"baja_id"     => $last_baja_id,
-					"articulo_id" => $articulo['articulo_id'],
-					"motivo"      => $articulo['motivo'],
-					"informebaja" => $articulo['informebaja'],
-				];
-				DetalleBaja::create($detalle_baja);
-				Articulo::where('idArticulo', '=', $articulo['articulo_id'])->update(['condicion' => false, 'estado'=>'Malo']);
-			}
+			$detalle_baja = [
+				'baja_id'       => $last_baja_id,
+				'articulo_id'  => $request['articulo_id'],
+				'motivo'       => $request['motivo'],
+				'informebaja' => $request['informe_baja'],
+			];
+			DetalleBaja::create($detalle_baja);
+			Articulo::where('idArticulo', '=', $request['articulo_id'])->update(['condicion' => false, 'estado' => 'Malo']);
+
 			DB::commit();
 			return response()->json([
 				'success' => true,
-				'message' => count($articulos).' '.'Articulos fueron dados de Baja correctamente',
+				'message' => 'Articulos fueron dados de Baja correctamente',
 			], 201);
-		} catch (\Illuminate\Database\QueryException $ex) {
+		} catch (\Illuminate\Database\QueryException$ex) {
 			DB::rollback();
 			return [
 				'success' => false,
@@ -73,7 +73,6 @@ class BajaController extends Controller {
 			];
 		}
 	}
-
 	/**
 	 * Display the specified resource.
 	 *
@@ -83,7 +82,6 @@ class BajaController extends Controller {
 	public function show($id) {
 		//
 	}
-
 	/**
 	 * Update the specified resource in storage.
 	 *
@@ -94,7 +92,6 @@ class BajaController extends Controller {
 	public function update(Request $request, $id) {
 		//
 	}
-
 	/**
 	 * Remove the specified resource from storage.
 	 *
@@ -103,5 +100,30 @@ class BajaController extends Controller {
 	 */
 	public function destroy($id) {
 		//
+	}
+	public function getArticuloResponsable(Request $request) {
+		try {
+			$articulo      = Articulo::where('idArticulo', $request['idArticulo'])->with('archivo')->first();
+			$responsable   = Responsable::with('usuario')->where('idResponsable', $request['idResponsable'])->first();
+			$response_data = [
+				'articulo_id'           => $articulo->idArticulo,
+				'articulo_codigo'       => $articulo->codigo,
+				'articulo_nombre'       => $articulo->nombre,
+				'articulo_descripcion'  => $articulo->descripcion,
+				'articulo_foto'         => $articulo->archivo->url,
+				'responsable_id'        => $responsable->idResponsable,
+				'responsable_full_name' => $responsable->usuario->nombres . ' ' . $responsable->usuario->paterno . ' ' . $responsable->usuario->materno,
+				'responsable_cedula'    => $responsable->usuario->ci . ' ' . $responsable->usuario->ci_ext,
+			];
+			return response()->json([
+				'success' => true,
+				'data'    => $response_data,
+			], 200);
+		} catch (\Illuminate\Database\QueryException$ex) {
+			return [
+				'success' => false,
+				'message' => $ex->getMessage(),
+			];
+		}
 	}
 }
