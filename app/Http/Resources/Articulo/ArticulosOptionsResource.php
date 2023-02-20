@@ -14,7 +14,7 @@ class ArticulosOptionsResource extends JsonResource {
 	public function toArray($request) {
 		return [
 			'articulo_id' => $this->idArticulo,
-			'estado'      => $this->condicion,
+			'asignado'      => $this->asignado,
 			'foto'        => $this->archivo->url,
 			'descripcion' => $this->descripcion,
 			'nombre'      => $this->nombre,

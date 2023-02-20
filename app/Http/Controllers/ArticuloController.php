@@ -7,15 +7,15 @@ use App\Http\Resources\Articulo\ArticuloResource;
 use App\Http\Resources\Articulo\ArticulosOptionsCollection;
 use App\Models\Archivo;
 use App\Models\Articulo;
+use App\Models\Funcionario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use PDF;
-
 class ArticuloController extends Controller {
 	public function index() {
 		try {
-			return new ArticuloCollection(Articulo::where('estado', '!=', 'Malo')->with('orgfinanciero')->with('categoria')->with('archivo')->get());
-		} catch (\Exception $ex) {
+			return new ArticuloCollection(Articulo::where('baja','=',false)->with('orgfinanciero')->with('categoria')->with('archivo')->get());
+		} catch (\Exception$ex) {
 			return response()->json([
 				'success' => false,
 				'message' => $ex->getMessage(),
@@ -56,7 +56,7 @@ class ArticuloController extends Controller {
 					'message' => 'El archivo no es una Imagen valida!',
 				], 200);
 			}
-		} catch (\Exception $ex) {
+		} catch (\Exception$ex) {
 			if ($fileName) {
 				deleteImage('home/articulos/fotos/', $fileName);
 			}
@@ -78,7 +78,7 @@ class ArticuloController extends Controller {
 					'message' => 'El recurso solicitado no existe',
 				], 200);
 			}
-		} catch (\Exception $ex) {
+		} catch (\Exception$ex) {
 			return response()->json([
 				'success' => false,
 				'message' => $ex->getMessage(),
@@ -104,7 +104,7 @@ class ArticuloController extends Controller {
 				'success' => true,
 				'message' => 'Articulo Actualizado correctamente',
 			], 201);
-		} catch (\Exception $ex) {
+		} catch (\Exception$ex) {
 			if ($fileName) {
 				deleteImage('home/articulos/fotos/', $fileName);
 			}
@@ -120,8 +120,9 @@ class ArticuloController extends Controller {
 			$folder   = 'home/articulos/fotos/';
 			$articulo = Articulo::find($id);
 			if ($articulo) {
-				$archivo = Archivo::where('articulo_id', '=', $id)->first();
-				deleteImage($folder, $archivo->nombre);
+				#Para borrar la imagen del articulo
+				// $archivo = Archivo::where('articulo_id', '=', $id)->first();
+				// deleteImage($folder, $archivo->nombre);
 				$articulo->delete();
 				return response()->json([
 					'success' => true,
@@ -132,7 +133,7 @@ class ArticuloController extends Controller {
 				'success' => false,
 				'message' => 'Registro no encontrado',
 			], 201);
-		} catch (\Exception $ex) {
+		} catch (\Exception$ex) {
 			return response()->json([
 				'success' => false,
 				'message' => $ex->getMessage(),
@@ -140,18 +141,44 @@ class ArticuloController extends Controller {
 		}
 	}
 	public function ArticulosReporte() {
-		$ldate     = date('Y-m-d H:i:s');
-		$articulos = Articulo::where('condicion', '=', true)->where('estado', '!=', 'Malo')->with('orgfinanciero')->with('categoria')->with('archivo')->get();
-		$fileName  = "Reporte Articulos" . ' ' . $ldate;
-		$pdf       = PDF::loadView('articulos.articulo', array('articulos' => $articulos))->setPaper('letter', 'portrait');
-		return $pdf->stream($fileName);
-		//  return view('articulos.articulo',array('articulos' => $articulos));
+		try {
+			$time         = date("d-m-Y") . "-" . time();
+			$fileName     = "Reporte Articulos" . ' ' . $time . '.pdf';
+			$originalPath = '/home/articulos/reportes/';
+			$urlFile      = public_path() . $originalPath;
+			$articulos = Articulo::where('estado', '!=', 'Malo')->with('orgfinanciero')->with('categoria')->with('archivo')->get();
+			if (count($articulos) > 0) {
+				$funcionarios = Funcionario::where('documento', '=', 'articulos')->where('estado', '=', true)->limit(4)->get();
+				if (count($funcionarios) > 0) {
+					foreach ($funcionarios as $key => $funcionario) {
+						$funcionarios_data[] = ['fun' . $key + 1 => strtoupper($funcionario['nombres']) . ' ' . strtoupper($funcionario['apellidos'])];
+					}
+					$pdf = PDF::loadView('articulos.articulo', array('articulos' => $articulos, 'funcionarios' => $funcionarios_data))->setPaper('letter', 'portrait');
+					$pdf->save($urlFile . $fileName);
+					return $pdf->stream($fileName);
+				}
+				return response()->json([
+					'success' => false,
+					'message' => "No existen funcionarios registrados",
+				], 404);
+			}
+			return response()->json([
+				'success' => false,
+				'message' => 'No existen articulos registrados',
+			], 404);
+			//  return view('articulos.articulo',array('articulos' => $articulos));
+		} catch (\Exception$ex) {
+			return response()->json([
+				'success' => false,
+				'message' => $ex->getMessage(),
+			], 404);
+		}
 	}
 	public function articulosOptions(Request $request) {
 		try {
 			// return Responsable::with('usuario')->with('servicio')->get();
-			return new ArticulosOptionsCollection(Articulo::where('condicion', true)->get());
-		} catch (\Exception $ex) {
+			return new ArticulosOptionsCollection(Articulo::where('asignado', false)->get());
+		} catch (\Exception$ex) {
 			return response()->json([
 				'success' => false,
 				'message' => $ex->getMessage(),

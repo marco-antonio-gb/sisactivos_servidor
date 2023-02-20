@@ -43,12 +43,13 @@ $GLOBALS['usuario'] = 'Impreso: ';
             </td>
             <td style="border: none !important;" width="33%">
                 <div class="text-center">
-                    <p class="titulo    m-1">ASIGNACION INDIVIDUAL DE BIENES</p>
+                    <h2 ><strong>HISTORIAL</strong></h2>
+					<h3>ASIGNACION INDIVIDUAL DE BIENES</h3>
 
                 </div>
             </td>
             <td style="border: none !important;text-align:right;" width="33%">
-                <p class="m-1">FECHA: {{ strtoupper($datos['creado']) }}</p>
+                {{-- <p class="m-1">FECHA: {{ strtoupper($datos['creado']) }}</p> --}}
             </td>
         </tr>
     </table>
@@ -106,31 +107,35 @@ $GLOBALS['usuario'] = 'Impreso: ';
         </table>
     </div>
     @if (count($datos['detalle_asignacion']) > 0)
-        <table class=" mt-1" width="100%">
-            <tr>
-                <td class="text-center cell-title" width="115px">CODIGO</td>
-                <td class="text-center cell-title">UNIDAD</td>
-                <td class="text-center cell-title">DESCRIPCION / DETALLE</td>
-                <td class="text-center cell-title" width="30px">ESTADO</td>
-            </tr>
-            @foreach ($datos['detalle_asignacion'] as $detalle)
+        @foreach ($datos['detalle_asignacion'] as $asignacion)
+            <table class="mt-1" width="100%">
                 <tr>
-                    <td class="text-center">{{ $detalle->articulo->codigo }}</td>
-                    <td class="text-center">{{ $detalle->articulo->unidad }}</td>
-                    <td>{{ $detalle->articulo->descripcion }} <br> <strong>DETALLE: {{ $detalle->detalle }}</strong>
-                    </td>
-                    <td style="text-transform: uppercase;">{{ $detalle->articulo->estado }}</td>
+                    <td class="text-center cell-title" width="115px">CODIGO</td>
+                    <td class="text-center cell-title">UNIDAD</td>
+                    <td class="text-center cell-title">DESCRIPCION / DETALLE</td>
+                    <td class="text-center cell-title" width="30px">ESTADO</td>
                 </tr>
-            @endforeach
-        </table>
-        <strong>Cantidad: {{ count($datos['detalle_asignacion']) }} Items</strong>
+                @foreach ($asignacion['detalle_asignacion'] as $detalle)
+                    <tr>
+                        <td class="text-center">{{ $detalle->articulo->codigo }}</td>
+                        <td class="text-center">{{ $detalle->articulo->unidad }}</td>
+                        <td>{{ $detalle->articulo->descripcion }} <br> <strong>DETALLE:
+                                {{ $detalle->detalle }}</strong>
+                        </td>
+                        <td style="text-transform: uppercase;">{{ $detalle->articulo->estado }}</td>
+                    </tr>
+                @endforeach
+            </table>
+            <strong>Cantidad: {{ count($asignacion['detalle_asignacion']) }} Items</strong>
+			<br><br>
+        @endforeach
     @else
         <div class="text-center">
             <h1>* ERROR *</h1>
             <p>No se pudo cargar la informacion de la Asignacion</p>
         </div>
     @endif
-    <div style="font-size: 10pt !important;margin-top:15px;text-align:justify;">
+    {{-- <div style="font-size: 10pt !important;margin-top:15px;text-align:justify;">
         <p>El servidor publico queda prohibido de usar o permitir el uso de los bienes para beneficio particular o
             privado, prestar o transferir el bien a otro empleado publico, dañar o averiar sus caracteristicas fisicas o
             tecnicas, poner en riesgo el bien, ingresar o sacar bienes particulares sin autorizacion de la Unidad o
@@ -138,7 +143,7 @@ $GLOBALS['usuario'] = 'Impreso: ';
         <p>La no obediencia a estas prohibiciones generara responsabilidades establecidas en la Ley Nro. 1178 y sus
             reglamentos.</p>
         <p>En señal de conformidad y aceptacion se firma el siguiente acta.</p>
-    </div>
+    </div> --}}
     <br>
     <br>
     <br>
@@ -151,15 +156,15 @@ $GLOBALS['usuario'] = 'Impreso: ';
     <table class="text-center no-border ">
         <tr>
             <td class="no-border ">
-                <strong>{{$datos['responsable_activos']}}</strong>
+                <strong>{{ $datos['responsable_activos'] }}</strong>
                 <p>RESPONSABLE ACTIVOS FIJOS</p>
             </td>
-            <td class="no-border ">
+            {{-- <td class="no-border ">
                 <strong>{{$datos['funcionario']}}</strong>
                 <p>TEC. OPERADOR</p>
-            </td>
+            </td> --}}
             <td class="no-border ">
-                <strong>{{$datos['responsable']['nombre_completo']}}</strong>
+                <strong>{{ $datos['responsable']['nombre_completo'] }}</strong>
                 <p>RECIBI CONFORME</p>
             </td>
         </tr>

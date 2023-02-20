@@ -41,7 +41,7 @@ class BajaController extends Controller {
 	public function store(BajaStoreRequest $request) {
 		/**
 		 * TODO: Validar Articulo y responsable
-		 * TODO: Actualizar estado de Articulo { condicion = false }
+		 * TODO: Actualizar estado de Articulo { asignado = false }
 		 */
 		try {
 			DB::beginTransaction();
@@ -58,7 +58,7 @@ class BajaController extends Controller {
 				'informebaja' => $request['informe_baja'],
 			];
 			DetalleBaja::create($detalle_baja);
-			Articulo::where('idArticulo', '=', $request['articulo_id'])->update(['condicion' => false, 'estado' => 'Malo']);
+			Articulo::where('idArticulo', '=', $request['articulo_id'])->update(['asignado' => false, 'baja' => true]);
 
 			DB::commit();
 			return response()->json([

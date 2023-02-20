@@ -30,6 +30,7 @@ class CreateArticulosTable extends Migration
             $table->unsignedBigInteger('orgfinanciero_id')->nullable();
             $table->foreign('orgfinanciero_id')->references('idOrgfinanciero')->on('org_financieros')->onDelete('cascade');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

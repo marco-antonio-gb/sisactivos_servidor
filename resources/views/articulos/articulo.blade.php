@@ -72,14 +72,17 @@ $GLOBALS['usuario'] = 'Impreso: ';
         <br>
         <br>
         <br>
+        {{-- <pre>{{var_dump($funcionarios)}}</pre> --}}
         <table class="text-center no-border ">
             <tr>
                 <td class="no-border ">
-                    <strong>DR. EDWIN BORIS VARGAS FLORES</strong>
+                    <strong>{{$funcionarios[0]['fun1']}}</strong>
+                    <p>DIRECCION</p>
                     <p>RECIBI CONFORME</p>
                 </td>
                 <td class="no-border ">
-                    <strong>INVENTARIADOR(A) G.A.M.O.</strong>
+                    <strong>{{$funcionarios[1]['fun2']}}</strong>
+                    <p>INVENTARIADOR(A) G.A.M.O.</p>
                     <p>ENTREGUE CONFORME</p>
                 </td>
             </tr>
@@ -89,11 +92,15 @@ $GLOBALS['usuario'] = 'Impreso: ';
 
             <tr>
                 <td class="no-border ">
-                    <strong>INVENTARIADOR(A) G.A.M.O.</strong>
+                    <strong>{{$funcionarios[2]['fun3']}}</strong>
+
+                    <p>INVENTARIADOR(A) G.A.M.O.</p>
                     <p>ENTREGUE CONFORME</p>
                 </td>
                 <td class="no-border ">
-                    <strong>OPERADOR(A) G.A.M.O.</strong>
+                    <strong>{{$funcionarios[3]['fun4']}}</strong>
+
+                    <p>OPERADOR(A) G.A.M.O.</p>
                     <p>ENTREGUE CONFORME</p>
                 </td>
             </tr>

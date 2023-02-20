@@ -2,8 +2,8 @@
 
 namespace App\Http\Resources\Articulo;
 
-use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Carbon;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 class ArticuloResource extends JsonResource {
 	/**
@@ -21,9 +21,10 @@ class ArticuloResource extends JsonResource {
 			'descripcion'      => $this->descripcion,
 			'estado'           => $this->estado,
 			'costo'            => $this->costo,
-			'condicion'        => $this->condicion,
-			'creado'           => $this->created_at,
-			'actualizado'      => $this->updated_at,
+			'asignado'         => $this->asignado,
+			'baja'             => $this->baja,
+			'creado'           =>Carbon::parse($this->created_at, 'America/La_Paz')->translatedFormat('l, j \d\e F \d\e\l Y, H:i:s'),
+			'actualizado'      => Carbon::parse($this->updatet_at, 'America/La_Paz')->translatedFormat('l, j \d\e F \d\e\l Y, H:i:s'),
 			'fecha_registro'   => $this->fecha_registro,
 			'foto'             => $this->archivo->url,
 			'categoria_id'     => $this->categoria_id,

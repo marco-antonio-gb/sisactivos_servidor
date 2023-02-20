@@ -50,6 +50,9 @@ Route::group(['middleware' => ['jwt.verify', 'cors']], function () {
     Route::get('responsables-options','ResponsableController@ResponsablesOptions');
 	Route::get('asignaciones-responsables','AsignacionController@AsignacionesResponsables');
 	Route::get('asignaciones-responsable/{idResponsable}','AsignacionController@AsignacionesResponsable');
+	Route::get('reporte-asignacion/{idAsignacion}', 'AsignacionController@AsignacionReporte');
+	Route::get('historial-asignaciones/{idResponsable}', 'AsignacionController@HistorialAsignaciones');
+
     #ARticulos
     Route::get('articulos-options','ArticuloController@articulosOptions');
 	#Responsable
@@ -63,4 +66,3 @@ Route::group(['middleware' => ['jwt.verify', 'cors']], function () {
 	Route::post('articulo-responsable','BajaController@getArticuloResponsable');
 });
 Route::post('reporte-articulos', 'ArticuloController@ArticulosReporte');
-Route::post('reporte-asignacion', 'AsignacionController@AsignacionReporte');

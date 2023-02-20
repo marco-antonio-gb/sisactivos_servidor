@@ -1,17 +1,17 @@
 <?php
-
 namespace App\Models;
-
 use DateTimeInterface;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 
 class Articulo extends Model {
+	use SoftDeletes;
 	protected $primaryKey = 'idArticulo';
-
-    protected $table = "articulos";
-    protected $casts      = ['condicion' => 'boolean', 'idArticulo'=>'integer'];
-	protected $fillable   = [
+	protected $table    = "articulos";
+	protected $casts    = ['asignado' => 'boolean','baja' => 'boolean', 'idArticulo' => 'integer'];
+	protected $fillable = [
 		'codigo',
 		'unidad',
 		'nombre',
@@ -19,14 +19,12 @@ class Articulo extends Model {
 		'imagen',
 		'costo',
 		'estado',
-		'condicion',
+		'asignado',
+		'baja',
 		'fecha_registro',
-
-
 		'categoria_id',
 		'orgfinanciero_id',
 	];
-
 	protected function serializeDate(DateTimeInterface $date) {
 		return empty($date)
 		? null
@@ -37,15 +35,13 @@ class Articulo extends Model {
 		? null
 		: Carbon::parse($date)->translatedFormat('j \d\e F \d\e\l Y ');
 	}
-
-    public function orgfinanciero() {
+	public function orgfinanciero() {
 		return $this->BelongsTo(OrgFinanciero::class, 'orgfinanciero_id', 'idOrgfinanciero');
 	}
-    public function categoria() {
+	public function categoria() {
 		return $this->BelongsTo(Categoria::class, 'categoria_id', 'idCategoria');
 	}
-
-    public function archivo(){
-        return $this->HasOne(Archivo::class,'articulo_id','idArticulo');
-    }
+	public function archivo() {
+		return $this->HasOne(Archivo::class, 'articulo_id', 'idArticulo');
+	}
 }

@@ -1,20 +1,18 @@
 <?php
 namespace App\Http\Controllers;
-use PDF;
-use App\Models\Articulo;
-use App\Models\Asignacion;
-use App\Models\Funcionario;
-use App\Models\Responsable;
-use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
-use App\Models\DetalleAsignacion;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Database\QueryException;
-use App\Http\Resources\Asignacion\AsignacionCollection;
-use App\Http\Resources\Responsable\ResponsableResource;
 use App\Http\Requests\Asignacion\AsignacionStoreRequest;
 use App\Http\Requests\Asignacion\AsignacionUpdateRequest;
+use App\Http\Resources\Asignacion\AsignacionCollection;
 use App\Http\Resources\DetalleAsignacion\DetalleAsignacionResource;
+use App\Http\Resources\Responsable\ResponsableResource;
+use App\Models\Articulo;
+use App\Models\Asignacion;
+use App\Models\DetalleAsignacion;
+use App\Models\Funcionario;
+use App\Models\Responsable;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
+use PDF;
 
 class AsignacionController extends Controller {
 	public function index() {
@@ -27,7 +25,7 @@ class AsignacionController extends Controller {
 				'success' => false,
 				'message' => 'No existen resultados',
 			], 200);
-		} catch (\Exception $ex) {
+		} catch (\Exception$ex) {
 			return response()->json([
 				'success' => false,
 				'message' => $ex->getMessage(),
@@ -54,14 +52,14 @@ class AsignacionController extends Controller {
 					"detalle"       => $articulo['detalle'],
 				];
 				DetalleAsignacion::create($detalle_asignacion);
-				Articulo::where('idArticulo', '=', $articulo['articulo_id'])->update(['condicion' => false]);
+				Articulo::where('idArticulo', '=', $articulo['articulo_id'])->update(['asignado' => true]);
 			}
 			DB::commit();
 			return response()->json([
 				'success' => true,
 				'message' => 'Asignacion registrado correctamente',
 			], 201);
-		} catch (\Illuminate\Database\QueryException $ex) {
+		} catch (\Illuminate\Database\QueryException$ex) {
 			DB::rollback();
 			return [
 				'success' => false,
@@ -84,7 +82,7 @@ class AsignacionController extends Controller {
 					'message' => 'No existen resultados',
 				], 200);
 			}
-		} catch (\Exception $ex) {
+		} catch (\Exception$ex) {
 			return response()->json([
 				'success' => false,
 				'message' => $ex->getMessage(),
@@ -104,7 +102,7 @@ class AsignacionController extends Controller {
 				'success' => false,
 				'message' => 'La asignacion No se pudo actualizar',
 			], 201);
-		} catch (\Exception $ex) {
+		} catch (\Exception$ex) {
 			return response()->json([
 				'success' => false,
 				'message' => $ex->getMessage(),
@@ -115,7 +113,7 @@ class AsignacionController extends Controller {
 		try {
 			$detalleAsignaciones = DetalleAsignacion::where('asignacion_id', '=', $id)->get();
 			foreach ($detalleAsignaciones as $key => $articulo) {
-				Articulo::where('idArticulo', '=', $articulo->articulo_id)->update(['condicion' => true]);
+				Articulo::where('idArticulo', '=', $articulo->articulo_id)->update(['asignado' => true]);
 			}
 			$asignacion = Asignacion::where('idAsignacion', '=', $id)->delete();
 			if ($asignacion) {
@@ -128,54 +126,49 @@ class AsignacionController extends Controller {
 				'success' => false,
 				'message' => 'Registro no encontrado',
 			], 201);
-		} catch (\Exception $ex) {
+		} catch (\Exception$ex) {
 			return response()->json([
 				'success' => false,
 				'message' => $ex->getMessage(),
 			], 404);
 		}
 	}
-
-
-	
-	public function AsignacionReporte(Request $request) {
+	public function AsignacionReporte($idAsignacion) {
 		try {
 			// $asignacion  = new DetalleAsignacionResource(Asignacion::with('responsable')->with('detalle_asignacion')->with('usuario')->where('idAsignacion', '=', $request['asignacion_id'])->first());
-
-			$asignacion = Asignacion::with('responsable')->with('detalle_asignacion')->with('usuario')->where('idAsignacion', '=', $request['asignacion_id'])->first();
-			$fileName    = "Reporte Asignacion";
-
-			$funcionario = Funcionario::where('estado', '=', true)->where('documento','=','asignacion')->first();
-			if(!$funcionario){
-				return response()->json([
-					'success' => false,
-					'message' => "No existe un funcionario seleccionado",
-				], 404);
-			}
-			$printData   = [
-				'asignacion_id'       => $asignacion->idAsignacion,
-				'estado'              => $asignacion->estado,
-				'creado'              => Carbon::parse($asignacion->created_at, 'America/La_Paz')->translatedFormat('l, j \d\e F \d\e\l Y, H:i:s'),
-				'actualizado'         => Carbon::parse($asignacion->updated_at, 'America/La_Paz')->translatedFormat('l, j \d\e F \d\e\l Y, H:i:s'),
-				'unidad'              => strtoupper($asignacion->responsable->servicio->nombre),
-				'responsable'         => [
-					'nombre_completo' => strtoupper($asignacion->responsable->usuario->paterno . ' ' . $asignacion->responsable->usuario->materno . ' ' . $asignacion->responsable->usuario->nombres),
-					'cargo'           => strtoupper($asignacion->responsable->usuario->cargo),
-					'cedula'          => $asignacion->responsable->usuario->ci . ' ' . $asignacion->responsable->usuario->ci_ext,
-					'servicio'        => strtoupper($asignacion->responsable->servicio->nombre),
-				],
-				'detalle_asignacion'  => $asignacion->detalle_asignacion,
-				'responsable_activos' => strtoupper($asignacion->usuario->paterno . ' ' . $asignacion->usuario->materno . ' ' . $asignacion->usuario->nombres),
-				'funcionario'         => strtoupper($funcionario->apellidos . ' ' . $funcionario->nombre),
-			];
-		 
-			$time         = date("d-m-Y") . "-" . time();
-			$fileName     = $time . '-' . slugify($printData['unidad']) . '.pdf';
-			$pdf          = PDF::loadView('asignacion.asignacion', array( 'datos' => $printData ))->setPaper('letter', 'landscape');
-			$originalPath = '/home/asignaciones/reportes/';
-			$urlFile      = public_path() . $originalPath;
-			$pdf->save($urlFile . $fileName);
-			return $pdf->stream($fileName);
+			$asignacion = Asignacion::with('responsable')->with('detalle_asignacion')->with('usuario')->where('idAsignacion', '=', $idAsignacion)->first();
+			if ($asignacion) {
+				$fileName    = "Reporte Asignacion";
+				$funcionario = Funcionario::where('estado', '=', true)->where('documento', '=', 'asignacion')->first();
+				if (!$funcionario) {
+					return response()->json([
+						'success' => false,
+						'message' => "No existe un funcionario seleccionado",
+					], 404);
+				}
+				$printData = [
+					'asignacion_id'       => $asignacion->idAsignacion,
+					'estado'              => $asignacion->estado,
+					'creado'              => Carbon::parse($asignacion->created_at, 'America/La_Paz')->translatedFormat('l, j \d\e F \d\e\l Y, H:i:s'),
+					'actualizado'         => Carbon::parse($asignacion->updated_at, 'America/La_Paz')->translatedFormat('l, j \d\e F \d\e\l Y, H:i:s'),
+					'unidad'              => strtoupper($asignacion->responsable->servicio->nombre),
+					'responsable'         => [
+						'nombre_completo' => strtoupper($asignacion->responsable->usuario->paterno . ' ' . $asignacion->responsable->usuario->materno . ' ' . $asignacion->responsable->usuario->nombres),
+						'cargo'           => strtoupper($asignacion->responsable->usuario->cargo),
+						'cedula'          => $asignacion->responsable->usuario->ci . ' ' . $asignacion->responsable->usuario->ci_ext,
+						'servicio'        => strtoupper($asignacion->responsable->servicio->nombre),
+					],
+					'detalle_asignacion'  => $asignacion->detalle_asignacion,
+					'responsable_activos' => strtoupper($asignacion->usuario->paterno . ' ' . $asignacion->usuario->materno . ' ' . $asignacion->usuario->nombres),
+					'funcionario'         => strtoupper($funcionario->apellidos . ' ' . $funcionario->nombres),
+				];
+				$time         = date("d-m-Y") . "-" . time();
+				$fileName     = $time . '-' . slugify($printData['responsable']['nombre_completo']) . '.pdf';
+				$pdf          = PDF::loadView('asignacion.asignacion', array('datos' => $printData))->setPaper('letter', 'landscape');
+				$originalPath = '/home/asignaciones/reportes/';
+				$urlFile      = public_path() . $originalPath;
+				$pdf->save($urlFile . $fileName);
+				return $pdf->stream($fileName);
 			}
 			return response()->json([
 				'success' => false,
@@ -188,6 +181,33 @@ class AsignacionController extends Controller {
 			], 404);
 		}
 	}
+	public function HistorialAsignaciones($idResponsable) {
+		$asignacion     = Responsable::with('asignaciones')->with('servicio')->with('usuario')->whereHas('asignaciones')->where('idResponsable', $idResponsable)->first();		
+		
+		$historial_data = [
+			'asignacion_id'       => $asignacion->idAsignacion,
+			'estado'              => $asignacion->estado,
+			'creado'              => Carbon::parse($asignacion->created_at, 'America/La_Paz')->translatedFormat('l, j \d\e F \d\e\l Y, H:i:s'),
+			'actualizado'         => Carbon::parse($asignacion->updated_at, 'America/La_Paz')->translatedFormat('l, j \d\e F \d\e\l Y, H:i:s'),
+			'unidad'              => strtoupper($asignacion->servicio->nombre),
+			'responsable'         => [
+				'nombre_completo' => strtoupper($asignacion->usuario->paterno . ' ' . $asignacion->usuario->materno . ' ' . $asignacion->usuario->nombres),
+				'cargo'           => strtoupper($asignacion->usuario->cargo),
+				'cedula'          => $asignacion->usuario->ci . ' ' . $asignacion->usuario->ci_ext,
+				'servicio'        => strtoupper($asignacion->servicio->nombre),
+			],
+			'detalle_asignacion'  => $asignacion->asignaciones,
+			'responsable_activos' => strtoupper($asignacion->usuario->paterno . ' ' . $asignacion->usuario->materno . ' ' . $asignacion->usuario->nombres),
+		];
+		// return $historial_data;
+		$time         = time();
+		$fileName     = 'Historial - '.$time . '-' . slugify($historial_data['responsable']['nombre_completo']) . '.pdf';
+		$pdf          = PDF::loadView('asignacion.historial_asignaciones', array('datos' => $historial_data))->setPaper('letter', 'landscape');
+		$originalPath = '/home/asignaciones/reportes/';
+		$urlFile      = public_path() . $originalPath;
+		$pdf->save($urlFile . $fileName);
+		return $pdf->stream($fileName);
+	}
 	public function AsignacionesResponsables() {
 		try {
 			$result = Responsable::with('asignaciones')->with('servicio')->with('usuario')->whereHas('asignaciones')->get();
@@ -198,13 +218,12 @@ class AsignacionController extends Controller {
 				'success' => false,
 				'message' => 'No existen resultados',
 			], 200);
-		} catch (\Exception $ex) {
+		} catch (\Exception$ex) {
 			return response()->json([
 				'success' => false,
 				'message' => $ex->getMessage(),
 			], 404);
 		}
-
 	}
 	public function AsignacionesResponsable($idResponsable) {
 		try {
@@ -216,12 +235,11 @@ class AsignacionController extends Controller {
 				'success' => false,
 				'message' => 'No existen resultados',
 			], 200);
-		} catch (\Exception $ex) {
+		} catch (\Exception$ex) {
 			return response()->json([
 				'success' => false,
 				'message' => $ex->getMessage(),
 			], 404);
 		}
-
 	}
 }
