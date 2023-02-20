@@ -176,7 +176,12 @@ class AsignacionController extends Controller {
 			$urlFile      = public_path() . $originalPath;
 			$pdf->save($urlFile . $fileName);
 			return $pdf->stream($fileName);
-		} catch (\Exception $ex) {
+			}
+			return response()->json([
+				'success' => false,
+				'message' => "No se encontro la asignacion",
+			], 404);
+		} catch (\Exception$ex) {
 			return response()->json([
 				'success' => false,
 				'message' => $ex->getMessage(),
