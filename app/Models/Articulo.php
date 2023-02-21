@@ -44,4 +44,10 @@ class Articulo extends Model {
 	public function archivo() {
 		return $this->HasOne(Archivo::class, 'articulo_id', 'idArticulo');
 	}
+	public function detalle_baja(){
+		return $this->HasOne(DetalleBaja::class, 'articulo_id','idArticulo');
+	}
+	public function detalle_asignacion(){
+		return $this->HasOne(DetalleAsignacion::class, 'articulo_id','idArticulo')->with('asignacion');
+	}
 }

@@ -10,7 +10,9 @@ use App\Models\Articulo;
 use App\Models\Funcionario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use PDF;
+use Barryvdh\DomPDF\Facade as PDF;
+
+
 class ArticuloController extends Controller {
 	public function index() {
 		try {
@@ -88,6 +90,7 @@ class ArticuloController extends Controller {
 	public function update(ArticuloUpdateRequest $request, $id) {
 		try {
 			DB::beginTransaction();
+			$fileName="";
 			$articulo = [
 				'codigo'           => $request['codigo'],
 				'unidad'           => $request['unidad'],

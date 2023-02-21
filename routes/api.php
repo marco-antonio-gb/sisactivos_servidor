@@ -64,5 +64,7 @@ Route::group(['middleware' => ['jwt.verify', 'cors']], function () {
 	Route::post('status-funcionario', 'FuncionarioController@StatusFuncionario');
 	#Bajas
 	Route::post('articulo-responsable','BajaController@getArticuloResponsable');
+	Route::get('articulos-baja','BajaController@ArticulosBaja');
+
 });
 Route::post('reporte-articulos', 'ArticuloController@ArticulosReporte');

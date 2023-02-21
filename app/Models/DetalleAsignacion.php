@@ -26,10 +26,10 @@ class DetalleAsignacion extends Model {
 		: Carbon::parse($value)->translatedFormat('l, j \d\e F \d\e\l Y H:i:s');
 	}
 	public function asignacion() {
-		return $this->BelongsTo(Asignacion::class, 'asignacion_id', 'idAsignacion');
+		return $this->BelongsTo(Asignacion::class, 'asignacion_id', 'idAsignacion')->with('responsable');
 	}
 
 	public function articulo() {
-		return $this->BelongsTo(Articulo::class, 'articulo_id', 'idArticulo')->with('orgfinanciero')->with('categoria');
+		return $this->BelongsTo(Articulo::class, 'articulo_id', 'idArticulo')->with('orgfinanciero')->with('categoria')->with('detalle_baja');
 	}
 }
