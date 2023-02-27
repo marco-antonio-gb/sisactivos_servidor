@@ -17,20 +17,20 @@ class DetalleBajaController extends Controller
     public function index()
     {
         try {
-			$result = Baja::with('usuario')->with('responsable')->with('detalle_baja')->get();
-			if ($result->isNotEmpty()) {
+            $result = Baja::with('usuario')->with('responsable')->with('detalle_baja')->get();
+            if ($result->isNotEmpty()) {
                 return new BajaCollection($result);
-			}
-			return response()->json([
-				'success' => false,
-				'message' => 'No existen resultados',
-			], 200);
-		} catch (\Exception $ex) {
-			return response()->json([
-				'success' => false,
-				'message' => $ex->getMessage(),
-			], 404);
-		}
+            }
+            return response()->json([
+                'success' => false,
+                'message' => 'No existen resultados',
+            ], 200);
+        } catch (\Exception $ex) {
+            return response()->json([
+                'success' => false,
+                'message' => $ex->getMessage(),
+            ], 404);
+        }
     }
 
     /**

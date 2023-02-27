@@ -1,20 +1,24 @@
 <?php
- 
+
 namespace App\Http\Controllers;
+
 use App\Models\Rol;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Validator;
-class RolController extends Controller {
-	public function index() {
+
+class RolController extends Controller
+{
+	public function index()
+	{
 		try {
 			$result = Role::all();
 			if (!$result->isEmpty()) {
 				return response()->json([
 					'success'     => true,
 					'data'        => $result,
-					
-				],200);
+
+				], 200);
 			} else {
 				return [
 					'success'     => false,
@@ -29,7 +33,8 @@ class RolController extends Controller {
 			], 404);
 		}
 	}
-	public function store(Request $request) {
+	public function store(Request $request)
+	{
 		$permisos = $request['permisos'];
 		try {
 			$validator = Validator::make($request->all(), [
@@ -41,7 +46,7 @@ class RolController extends Controller {
 				return response()->json([
 					'success'     => false,
 					'validator'   => $validator->errors()->all(),
-				],400);
+				], 400);
 			} else {
 				$newRole = Role::create(array_merge(
 					$validator->validated()
@@ -59,10 +64,11 @@ class RolController extends Controller {
 			], 404);
 		}
 	}
-	public function show($id) {
+	public function show($id)
+	{
 		try {
-			 $roles=Role::find($id);
-             $roles->permissions->pluck('name');
+			$roles = Role::find($id);
+			$roles->permissions->pluck('name');
 
 			if ($roles) {
 				return response()->json([
@@ -70,10 +76,10 @@ class RolController extends Controller {
 					'data'    => $roles,
 				], 200);
 			} else {
-				 return response()->json([
-                    'success'     => false,
+				return response()->json([
+					'success'     => false,
 					'message'     => 'No se encontro ningun registro',
-                 ],201);
+				], 201);
 			}
 		} catch (\Exception $ex) {
 			return response()->json([
@@ -82,7 +88,8 @@ class RolController extends Controller {
 			], 404);
 		}
 	}
-	public function update(Request $request, $id) {
+	public function update(Request $request, $id)
+	{
 		try {
 			$validator = Validator::make($request->all(), [
 				'name'        => 'required',
@@ -92,7 +99,7 @@ class RolController extends Controller {
 				return response()->json([
 					'success'     => false,
 					'validator'   => $validator->errors()->all()
-				],400);
+				], 400);
 			} else {
 				$res_rol = [
 					'name'        => $request['name'],
@@ -102,10 +109,10 @@ class RolController extends Controller {
 				$role->name        = $request['name'];
 				$role->descripcion = $request['descripcion'];
 				$role->save();
-					foreach ($request['permisos'] as $value) {
-						$data[] = $value['name'];
-					}
-					$role->syncPermissions($data);
+				foreach ($request['permisos'] as $value) {
+					$data[] = $value['name'];
+				}
+				$role->syncPermissions($data);
 				return response()->json([
 					'success' => true,
 					'message' => 'Rol Actualizado correctamente',
@@ -118,7 +125,8 @@ class RolController extends Controller {
 			], 404);
 		}
 	}
-	public function destroy($id) {
+	public function destroy($id)
+	{
 		try {
 			Rol::where('id', '=', $id)->delete();
 			return response()->json([

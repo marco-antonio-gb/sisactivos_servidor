@@ -1,18 +1,22 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Http\Requests\PermisoStoreRequest;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
 use Validator;
 
-class PermisoController extends Controller {
+class PermisoController extends Controller
+{
 
-	public function __construct() {
+	public function __construct()
+	{
 		$this->middleware(['role:Administrador'])->except(['permission:permiso-list|permiso-create']);
 	}
 
-	public function index() {
+	public function index()
+	{
 		try {
 			$result = Permission::all();
 			if (!$result->isEmpty()) {
@@ -34,11 +38,10 @@ class PermisoController extends Controller {
 		}
 	}
 
-	public function store(PermisoStoreRequest $request) {
+	public function store(PermisoStoreRequest $request)
+	{
 		try {
-			Permission::create(array_merge(
-				$validator->validated()
-			));
+			Permission::create($request['name']);
 			return response()->json([
 				'success' => true,
 				'message' => 'Permiso registrado correctamente',
@@ -50,7 +53,8 @@ class PermisoController extends Controller {
 			], 404);
 		}
 	}
-	public function show($id) {
+	public function show($id)
+	{
 		try {
 			$result = Permission::find($id);
 			if ($result) {
@@ -71,7 +75,8 @@ class PermisoController extends Controller {
 			], 404);
 		}
 	}
-	public function update(Request $request, $id) {
+	public function update(Request $request, $id)
+	{
 		try {
 			$validator = Validator::make($request->all(), [
 				'name'        => 'required',
@@ -103,7 +108,8 @@ class PermisoController extends Controller {
 			], 404);
 		}
 	}
-	public function destroy($id) {
+	public function destroy($id)
+	{
 		try {
 			$permiso = Permission::find($id);
 			if (empty($permiso)) {

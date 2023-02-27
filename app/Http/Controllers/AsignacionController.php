@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Http\Controllers;
+
 use App\Http\Requests\Asignacion\AsignacionStoreRequest;
 use App\Http\Requests\Asignacion\AsignacionUpdateRequest;
 use App\Http\Resources\Asignacion\AsignacionCollection;
@@ -147,7 +149,7 @@ class AsignacionController extends Controller
 			// $asignacion  = new DetalleAsignacionResource(Asignacion::with('responsable')->with('detalle_asignacion')->with('usuario')->where('idAsignacion', '=', $request['asignacion_id'])->first());
 			$asignacion = Asignacion::with('responsable')->with('detalle_asignacion')->with('usuario')->where('idAsignacion', '=', $idAsignacion)->first();
 			if ($asignacion) {
-				 
+
 				$funcionario = Funcionario::where('estado', '=', true)->where('documento', '=', 'asignacion')->first();
 				if (!$funcionario) {
 					return response()->json([
@@ -172,7 +174,7 @@ class AsignacionController extends Controller
 					'funcionario'         => strtoupper($funcionario->apellidos . ' ' . $funcionario->nombres),
 				];
 				$time         = time();
-				$fileName     = 'Asignacion - ' . $time . '-' . slugify($printData['responsable']['nombre_completo']) . '.pdf';
+				$fileName     = 'Asignacion Individual - ' . $time . '-' . slugify($printData['responsable']['nombre_completo']) . '.pdf';
 				$pdf          = PDF::loadView('asignacion.asignacion', array('datos' => $printData))->setPaper('letter', 'landscape');
 				$originalPath = '/home/asignaciones/reportes/';
 				$urlFile      = public_path() . $originalPath;
@@ -210,7 +212,7 @@ class AsignacionController extends Controller
 		];
 		// return $historial_data;
 		$time         = time();
-		$fileName     = 'Historial - ' . $time . '-' . slugify($historial_data['responsable']['nombre_completo']) . '.pdf';
+		$fileName     = 'Historial Asignaciones - ' . $time . '-' . slugify($historial_data['responsable']['nombre_completo']) . '.pdf';
 		$pdf          = PDF::loadView('asignacion.historial_asignaciones', array('datos' => $historial_data))->setPaper('letter', 'landscape');
 		$originalPath = '/home/asignaciones/reportes/';
 		$urlFile      = public_path() . $originalPath;
@@ -239,6 +241,7 @@ class AsignacionController extends Controller
 	{
 		try {
 			$result = Responsable::with('asignaciones')->with('servicio')->with('usuario')->whereHas('asignaciones')->where('idResponsable', $idResponsable)->first();
+			// return $result;
 			if ($result) {
 				return new ResponsableResource($result);
 			}

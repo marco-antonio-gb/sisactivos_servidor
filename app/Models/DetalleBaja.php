@@ -8,26 +8,33 @@ use Illuminate\Support\Carbon;
 
 class DetalleBaja extends Model
 {
-    protected $primaryKey = 'idDetalleBaja';
+	protected $primaryKey = 'idDetalleBaja';
 	protected $table      = "detalle_bajas";
 	protected $fillable   = [
-        'motivo',
-        'informebaja',
-        'fecha_hora',
-        'baja_id',
-        'articulo_id',
+		'motivo',
+		'informebaja',
+		'fecha_hora',
+		'baja_id',
+		'articulo_id',
 	];
-	protected function serializeDate(DateTimeInterface $date) {
+	protected function serializeDate(DateTimeInterface $date)
+	{
 		return empty($date)
-		? null
-		: Carbon::parse($date)->translatedFormat('l, j \d\e F \d\e\l Y H:i:s');
+			? null
+			: Carbon::parse($date)->translatedFormat('l, j \d\e F \d\e\l Y H:i:s');
 	}
 
-	public function bajas() {
-		return $this->BelongsTo(Baja::class, 'baja_id', 'idBaja');
+	public function bajas()
+	{
+		return $this->BelongsTo(Baja::class, 'baja_id', 'idBaja')->with('usuario');
 	}
 
-	public function articulo() {
+	public function articulo()
+	{
 		return $this->BelongsTo(Articulo::class, 'articulo_id', 'idArticulo');
+	}
+	public function archivo_detalle()
+	{
+		return $this->hasOne(ArchivosDetallebaja::class, 'detallebaja_id', 'idDetalleBaja');
 	}
 }

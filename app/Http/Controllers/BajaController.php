@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Baja\BajaStoreRequest;
 use App\Http\Resources\Baja\BajaArticuloCollection;
 use App\Http\Resources\Baja\BajaCollection;
 use App\Models\Articulo;
 use App\Models\Baja;
 use App\Models\DetalleBaja;
+use App\Models\ArchivosDetalleBaja;
 use App\Models\Responsable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -30,7 +30,7 @@ class BajaController extends Controller
                 'success' => false,
                 'message' => 'No existen resultados',
             ], 200);
-        } catch (\Exception$ex) {
+        } catch (\Exception $ex) {
             return response()->json([
                 'success' => false,
                 'message' => $ex->getMessage(),
@@ -43,36 +43,48 @@ class BajaController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(BajaStoreRequest $request)
+    public function store(Request $request)
     {
-        /**
-         * TODO: Validar Articulo y responsable
-         * TODO: Actualizar estado de Articulo { asignado = false }
-         */
+
         try {
             DB::beginTransaction();
             $usuario_id = auth()->user()->idUsuario;
+            $datos     = json_decode($request['data'], true);
+            $folder = 'home/bajas/archivos/';
+            $imageName = "";
+            if ($request->hasFile('archivo')) {
+
+                $imageName = storageAnotherFile($request['archivo'], $folder);
+            }
             $baja       = [
-                'responsable_id' => $request['responsable_id'],
+                'responsable_id' => $datos['baja']['responsable_id'],
                 'usuario_id'     => $usuario_id,
             ];
             $last_baja_id = Baja::create($baja)->idBaja;
             $detalle_baja = [
                 'baja_id'     => $last_baja_id,
-                'articulo_id' => $request['articulo_id'],
-                'motivo'      => $request['motivo'],
-                'informebaja' => $request['informe_baja'],
+                'articulo_id' => $datos['detalle_baja']['articulo_id'],
+                'motivo'      => $datos['detalle_baja']['motivo'],
+                'informebaja' => $datos['detalle_baja']['informebaja'],
             ];
             DetalleBaja::create($detalle_baja);
-            Articulo::where('idArticulo', '=', $request['articulo_id'])->update(['asignado' => false, 'baja' => true]);
+            Articulo::where('idArticulo', '=', $datos['detalle_baja']['articulo_id'])->update(['estado' => 'Malo', 'baja' => true]);
+            if ($last_baja_id) {
 
+                ArchivosDetalleBaja::create([
+                    'nombre' => $imageName,
+                    'url' => $folder . $imageName,
+                    'detallebaja_id'=> $last_baja_id
+                ]);
+            }
             DB::commit();
             return response()->json([
                 'success' => true,
                 'message' => 'Articulo dado de Baja correctamente',
             ], 201);
-        } catch (\Illuminate\Database\QueryException$ex) {
+        } catch (\Illuminate\Database\QueryException $ex) {
             DB::rollback();
+            deleteImage($folder, $imageName);
             return [
                 'success' => false,
                 'message' => $ex->getMessage(),
@@ -129,7 +141,7 @@ class BajaController extends Controller
                 'success' => true,
                 'data'    => $response_data,
             ], 200);
-        } catch (\Illuminate\Database\QueryException$ex) {
+        } catch (\Illuminate\Database\QueryException $ex) {
             return [
                 'success' => false,
                 'message' => $ex->getMessage(),
@@ -139,7 +151,7 @@ class BajaController extends Controller
     public function ArticulosBaja()
     {
         try {
-            $result = Articulo::with('detalle_asignacion')->get();
+            $result = Articulo::whereHas('detalle_asignacion')->get();
             if (count($result) > 0) {
                 return new BajaArticuloCollection($result);
             }
@@ -147,7 +159,7 @@ class BajaController extends Controller
                 'success' => false,
                 'message' => "No existen registros",
             ], 200);
-        } catch (\Illuminate\Database\QueryException$ex) {
+        } catch (\Illuminate\Database\QueryException $ex) {
             return [
                 'success' => false,
                 'message' => $ex->getMessage(),

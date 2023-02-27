@@ -1,4 +1,5 @@
 <?php
+
 use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => 'api'], function ($router) {
@@ -11,15 +12,14 @@ Route::group([
 	'middleware' => 'api',
 	'prefix'     => 'auth',
 ], function ($router) {
-
 	Route::post('login', 'Auth\AuthController@login');
 	Route::post('logout', 'Auth\AuthController@logout');
 	Route::post('refresh', 'Auth\AuthController@refresh');
 	Route::post('me', 'Auth\AuthController@userProfile');
 });
 Route::group(['middleware' => ['jwt.verify', 'cors']], function () {
-	Route::apiResource('usuarios',UsuarioController::class)->middleware(['role:Administrador']);
-	Route::apiResource('personas',PersonaController::class)->middleware(['role:Administrador']);
+	Route::apiResource('usuarios', UsuarioController::class)->middleware(['role:Administrador']);
+	Route::apiResource('personas', PersonaController::class)->middleware(['role:Administrador']);
 	Route::apiResource('permisos', PermisoController::class)->middleware(['role:Administrador']);
 	Route::apiResource('roles', RolController::class)->middleware(['role:Administrador']);
 	Route::apiResource('servicios', ServicioController::class)->middleware(['role:Administrador']);
@@ -36,7 +36,6 @@ Route::group(['middleware' => ['jwt.verify', 'cors']], function () {
 	Route::apiResource('bajas', BajaController::class)->middleware(['role:Administrador']);
 	Route::apiResource('detalle-bajas', DetalleBajaController::class)->middleware(['role:Administrador']);
 	Route::post('set-theme', 'UsuarioController@SetTheme');
-
 	#Personas
 	Route::post('verificar-ci', 'PersonaController@VerificarCi');
 	#Usuarios
@@ -47,14 +46,13 @@ Route::group(['middleware' => ['jwt.verify', 'cors']], function () {
 	Route::post('activate-account', 'UsuarioController@ActivateAccount');
 	Route::post('suspend-account', 'UsuarioController@SuspendAccount');
 	#Asignaciones
-    Route::get('responsables-options','ResponsableController@ResponsablesOptions');
-	Route::get('asignaciones-responsables','AsignacionController@AsignacionesResponsables');
-	Route::get('asignaciones-responsable/{idResponsable}','AsignacionController@AsignacionesResponsable');
+	Route::get('responsables-options', 'ResponsableController@ResponsablesOptions');
+	Route::get('asignaciones-responsables', 'AsignacionController@AsignacionesResponsables');
+	Route::get('asignaciones-responsable/{idResponsable}', 'AsignacionController@AsignacionesResponsable');
 	Route::get('reporte-asignacion/{idAsignacion}', 'AsignacionController@AsignacionReporte');
 	Route::get('historial-asignaciones/{idResponsable}', 'AsignacionController@HistorialAsignaciones');
-
-    #ARticulos
-    Route::get('articulos-options','ArticuloController@articulosOptions');
+	#ARticulos
+	Route::get('articulos-options', 'ArticuloController@articulosOptions');
 	#Responsable
 	Route::get('responsable-baja/{id}', 'ResponsableController@bajaResponsable');
 	Route::get('responsable-usuarios', 'ResponsableController@Usuarios');
@@ -63,8 +61,7 @@ Route::group(['middleware' => ['jwt.verify', 'cors']], function () {
 	#Funcionarios
 	Route::post('status-funcionario', 'FuncionarioController@StatusFuncionario');
 	#Bajas
-	Route::post('articulo-responsable','BajaController@getArticuloResponsable');
-	Route::get('articulos-baja','BajaController@ArticulosBaja');
-
+	Route::post('articulo-responsable', 'BajaController@getArticuloResponsable');
+	Route::get('articulos-baja', 'BajaController@ArticulosBaja');
 });
 Route::post('reporte-articulos', 'ArticuloController@ArticulosReporte');
