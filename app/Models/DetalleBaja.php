@@ -31,7 +31,7 @@ class DetalleBaja extends Model
 
 	public function articulo()
 	{
-		return $this->BelongsTo(Articulo::class, 'articulo_id', 'idArticulo');
+		return $this->BelongsTo(Articulo::class, 'articulo_id', 'idArticulo')->with('archivo');
 	}
 	public function archivo_detalle()
 	{

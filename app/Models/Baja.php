@@ -35,6 +35,6 @@ class Baja extends Model
 
 	public function detalle_baja()
 	{
-		return $this->HasMany(DetalleBaja::class, 'baja_id', 'idBaja')->with('articulo')->with('archivo');
+		return $this->hasOne(DetalleBaja::class, 'baja_id', 'idBaja')->with('articulo')->with('archivo_detalle');
 	}
 }

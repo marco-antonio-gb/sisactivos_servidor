@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\Baja\BajaArticuloCollection;
-use App\Http\Resources\Baja\BajaCollection;
-use App\Models\Articulo;
 use App\Models\Baja;
+use App\Models\Articulo;
 use App\Models\DetalleBaja;
-use App\Models\ArchivosDetalleBaja;
 use App\Models\Responsable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\ArchivosDetalleBaja;
+use App\Http\Resources\Baja\BajaResource;
+use App\Http\Resources\Baja\BajaCollection;
+use App\Http\Resources\Baja\BajaArticuloCollection;
 
 class BajaController extends Controller
 {
@@ -74,7 +75,7 @@ class BajaController extends Controller
                 ArchivosDetalleBaja::create([
                     'nombre' => $imageName,
                     'url' => $folder . $imageName,
-                    'detallebaja_id'=> $last_baja_id
+                    'detallebaja_id' => $last_baja_id
                 ]);
             }
             DB::commit();
@@ -99,7 +100,23 @@ class BajaController extends Controller
      */
     public function show($id)
     {
-        //
+        try {
+            $result = Baja::where('idBaja', $id)->with('usuario')->with('responsable')->with('detalle_baja')->first();
+
+            if ($result) {
+                return new BajaResource($result);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No existen resultados',
+                ], 200);
+            }
+        } catch (\Exception $ex) {
+            return response()->json([
+                'success' => false,
+                'message' => $ex->getMessage(),
+            ], 404);
+        }
     }
     /**
      * Update the specified resource in storage.
@@ -164,6 +181,68 @@ class BajaController extends Controller
                 'success' => false,
                 'message' => $ex->getMessage(),
             ];
+        }
+    }
+    public function BajaReporte($idBaja)
+    {
+        try {
+
+            $result = Baja::where('idBaja', $idBaja)->with('usuario')->with('responsable')->with('detalle_baja')->first();
+            return $result;
+            if ($result) {
+
+
+                $printData = [
+                    'baja' => [
+                        'baja_id' => $idBaja,
+                        'creado' => Carbon::parse($result->detalle_baja->created_at, 'America/La_Paz')->translatedFormat('l, j \d\e F \d\e\l Y, H:i:s'),
+                    ],
+                    'articulo' => [
+                        'articulo_id' => $result->detalle_baja->articulo->idArticulo,
+                        'nombre' => $result->detalle_baja->articulo->nombre,
+                        'codigo' => $result->detalle_baja->articulo->codigo,
+                        'descripcion' => $result->detalle_baja->articulo->descripcion,
+                        'fecha_registro' => Carbon::parse($result->detalle_baja->articulo->created_at, 'America/La_Paz')->translatedFormat('l, j \d\e F \d\e\l Y, H:i:s'),
+                        'imagen' => $result->detalle_baja->articulo->archivo->url,
+                    ],
+                    'detalle_baja' => [
+                        'detallebaja_id' => $result->detalle_baja->idDetalleBaja,
+                        'motivo' => $result->detalle_baja->motivo,
+                        'informebaja' => $result->detalle_baja->informebaja,
+                        'fecha_hora' => Carbon::parse($result->detalle_baja->created_at, 'America/La_Paz')->translatedFormat('l, j \d\e F \d\e\l Y, H:i:s'),
+                        'archivo_baja' => $result->detalle_baja->archivo_detalle->url
+
+                    ],
+                    'usuario'               => [
+                        'usuario_id'      => $result->usuario->idUsuario,
+                        'nombre_completo' => $result->usuario->paterno . ' ' . $result->usuario->materno . ' ' . $result->usuario->nombres,
+                        'cargo'           => $result->usuario->cargo,
+                        'estado'          => $result->usuario->estado,
+                    ],
+                    'responsable'           => [
+                        'responsable_id'  => $result->responsable->idResponsable,
+                        'nombre_completo' => $result->responsable->usuario->paterno . ' ' . $result->responsable->usuario->materno . ' ' . $result->responsable->usuario->nombres,
+                        'cargo'           => $result->responsable->usuario->cargo,
+                        'estado'          => $result->responsable->usuario->estado,
+                    ],
+                ];
+                $time         = time();
+                $fileName     = 'Reporte baja de Articulo - ' . $time . '-' . slugify($printData['articulo']['nombre']) . '.pdf';
+                $pdf          = PDF::loadView('bajas.reporte_baja', array('datos' => $printData))->setPaper('letter', 'landscape');
+                $originalPath = '/home/asignaciones/reportes/';
+                $urlFile      = public_path() . $originalPath;
+                $pdf->save($urlFile . $fileName);
+                return $pdf->stream($fileName);
+            }
+            return response()->json([
+                'success' => false,
+                'message' => "No se encontro la asignacion",
+            ], 404);
+        } catch (\Exception $ex) {
+            return response()->json([
+                'success' => false,
+                'message' => $ex->getMessage(),
+            ], 404);
         }
     }
 }
