@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ArchivosDetalleBaja extends Model
 {
-    protected $table = 'acrhivos_detalle_baja';
+    protected $table = 'archivos_detalle_baja';
     protected $primaryKaye = 'idArchivoDetallebaja';
     protected $fillable = [
         'nombre',

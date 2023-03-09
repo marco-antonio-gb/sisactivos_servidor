@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class OrgFinanciero extends Model
 {
-    protected $primaryKey = 'idOrgfinanciero';
+	protected $primaryKey = 'idOrgfinanciero';
 	protected $casts      = ['condicion' => 'boolean'];
 	protected $table      = 'org_financieros';
 
@@ -18,9 +18,14 @@ class OrgFinanciero extends Model
 		'descripcion',
 		'condicion'
 	];
-	protected function serializeDate(DateTimeInterface $date) {
+	protected function serializeDate(DateTimeInterface $date)
+	{
 		return empty($date)
-		? null
-		: Carbon::parse($date)->translatedFormat('l, j \d\e F \d\e\l Y H:i:s');
+			? null
+			: Carbon::parse($date)->translatedFormat('l, j \d\e F \d\e\l Y H:i:s');
+	}
+	public function articulos()
+	{
+		return $this->hasMany(Articulo::class, 'orgfinanciero_id', 'idOrgfinanciero');
 	}
 }

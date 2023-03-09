@@ -45,24 +45,33 @@ Route::group(['middleware' => ['jwt.verify', 'cors']], function () {
 	Route::post('verificar-correo', 'UsuarioController@VerificarCorreo');
 	Route::post('activate-account', 'UsuarioController@ActivateAccount');
 	Route::post('suspend-account', 'UsuarioController@SuspendAccount');
+	Route::get('info-usuarios', 'UsuarioController@InfoUsuarios');
 	#Asignaciones
 	Route::get('responsables-options', 'ResponsableController@ResponsablesOptions');
 	Route::get('asignaciones-responsables', 'AsignacionController@AsignacionesResponsables');
 	Route::get('asignaciones-responsable/{idResponsable}', 'AsignacionController@AsignacionesResponsable');
 	Route::get('reporte-asignacion/{idAsignacion}', 'AsignacionController@AsignacionReporte');
 	Route::get('historial-asignaciones/{idResponsable}', 'AsignacionController@HistorialAsignaciones');
-	#ARticulos
+	Route::get('info-asignaciones', 'AsignacionController@InfoAsignaciones');
+	#Articulos
 	Route::get('articulos-options', 'ArticuloController@articulosOptions');
+	Route::post('reporte-articulos', 'ArticuloController@ArticulosReporte');
+	Route::get('info-articulos', 'ArticuloController@InfoArticulos');
 	#Responsable
 	Route::get('responsable-baja/{id}', 'ResponsableController@bajaResponsable');
 	Route::get('responsable-usuarios', 'ResponsableController@Usuarios');
 	Route::get('responsable-servicios', 'ResponsableController@Servicios');
 	Route::post('cambiar-servicios', 'ResponsableController@CambiarServicios');
+	Route::get('info-responsables', 'ResponsableController@InfoResponsables');
 	#Funcionarios
 	Route::post('status-funcionario', 'FuncionarioController@StatusFuncionario');
 	#Bajas
 	Route::post('articulo-responsable', 'BajaController@getArticuloResponsable');
 	Route::get('articulos-baja', 'BajaController@ArticulosBaja');
 	Route::get('reporte-baja/{idBaja}', 'BajaController@BajaReporte');
+	Route::get('info-bajas', 'BajaController@InfoBajas');
+	#Inicio
+	Route::get('inicio-info', 'InfoInicioController@InfoInicio');
+	#LOG FILES
+	Route::get('get-log-files', 'LogController@getLogFile');
 });
-Route::post('reporte-articulos', 'ArticuloController@ArticulosReporte');

@@ -1,35 +1,43 @@
 <?php
+
 namespace App\Http\Controllers;
-use App\Http\Requests\Articulo\ArticuloStoreRequest;
-use App\Http\Requests\Articulo\ArticuloUpdateRequest;
-use App\Http\Resources\Articulo\ArticuloCollection;
-use App\Http\Resources\Articulo\ArticuloResource;
-use App\Http\Resources\Articulo\ArticulosOptionsCollection;
+
 use App\Models\Archivo;
 use App\Models\Articulo;
+use App\Models\Categoria;
 use App\Models\Funcionario;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use App\Models\OrgFinanciero;
 use Barryvdh\DomPDF\Facade as PDF;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use App\Http\Resources\Articulo\ArticuloResource;
+use App\Http\Resources\Articulo\ArticuloCollection;
+use App\Http\Requests\Articulo\ArticuloStoreRequest;
+use App\Http\Requests\Articulo\ArticuloUpdateRequest;
+use App\Http\Resources\Articulo\ArticulosOptionsCollection;
 
-
-class ArticuloController extends Controller {
-	public function index() {
+class ArticuloController extends Controller
+{
+	public function index()
+	{
 		try {
-			return new ArticuloCollection(Articulo::where('baja','=',false)->with('orgfinanciero')->with('categoria')->with('archivo')->get());
-		} catch (\Exception$ex) {
+			return new ArticuloCollection(Articulo::where('baja', '=', false)->with('orgfinanciero')->with('categoria')->with('archivo')->get());
+		} catch (\Exception $ex) {
 			return response()->json([
 				'success' => false,
 				'message' => $ex->getMessage(),
 			], 404);
 		}
 	}
-	public function store(ArticuloStoreRequest $request) {
+	public function store(ArticuloStoreRequest $request)
+	{
 		try {
 			DB::beginTransaction();
 			$folder   = 'home/articulos/fotos/';
 			$datos    = json_decode($request['data'], true);
 			$fileName = storeImage($request['foto'], $folder);
+			$usuario      = auth()->user();
 			if ($fileName) {
 				$articulo = [
 					'codigo'           => $datos['codigo'],
@@ -48,6 +56,7 @@ class ArticuloController extends Controller {
 					'articulo_id' => $last_articulo,
 				]);
 				DB::commit();
+				Log::channel('registro_articulos')->info('data => ', ['articulo' => $articulo, 'user_login' => ['id' => $usuario->idUsuario, 'nombres' => $usuario->nombres], 'IP' => \Request::getClientIp(true)]);
 				return response()->json([
 					'success' => true,
 					'message' => 'Articulo registrado correctamente',
@@ -58,7 +67,7 @@ class ArticuloController extends Controller {
 					'message' => 'El archivo no es una Imagen valida!',
 				], 200);
 			}
-		} catch (\Exception$ex) {
+		} catch (\Exception $ex) {
 			if ($fileName) {
 				deleteImage('home/articulos/fotos/', $fileName);
 			}
@@ -69,7 +78,8 @@ class ArticuloController extends Controller {
 			];
 		}
 	}
-	public function show($id) {
+	public function show($id)
+	{
 		try {
 			$articulo = Articulo::where('idArticulo', '=', intval($id))->with('orgfinanciero')->with('categoria')->with('archivo')->first();
 			if ($articulo) {
@@ -80,17 +90,18 @@ class ArticuloController extends Controller {
 					'message' => 'El recurso solicitado no existe',
 				], 200);
 			}
-		} catch (\Exception$ex) {
+		} catch (\Exception $ex) {
 			return response()->json([
 				'success' => false,
 				'message' => $ex->getMessage(),
 			], 404);
 		}
 	}
-	public function update(ArticuloUpdateRequest $request, $id) {
+	public function update(ArticuloUpdateRequest $request, $id)
+	{
 		try {
 			DB::beginTransaction();
-			$fileName="";
+			$fileName = "";
 			$articulo = [
 				'codigo'           => $request['codigo'],
 				'unidad'           => $request['unidad'],
@@ -107,7 +118,7 @@ class ArticuloController extends Controller {
 				'success' => true,
 				'message' => 'Articulo Actualizado correctamente',
 			], 201);
-		} catch (\Exception$ex) {
+		} catch (\Exception $ex) {
 			if ($fileName) {
 				deleteImage('home/articulos/fotos/', $fileName);
 			}
@@ -118,7 +129,8 @@ class ArticuloController extends Controller {
 			];
 		}
 	}
-	public function destroy($id) {
+	public function destroy($id)
+	{
 		try {
 			$folder   = 'home/articulos/fotos/';
 			$articulo = Articulo::find($id);
@@ -136,14 +148,15 @@ class ArticuloController extends Controller {
 				'success' => false,
 				'message' => 'Registro no encontrado',
 			], 201);
-		} catch (\Exception$ex) {
+		} catch (\Exception $ex) {
 			return response()->json([
 				'success' => false,
 				'message' => $ex->getMessage(),
 			], 404);
 		}
 	}
-	public function ArticulosReporte() {
+	public function ArticulosReporte()
+	{
 		try {
 			$time         = date("d-m-Y") . "-" . time();
 			$fileName     = "Reporte Articulos" . ' ' . $time . '.pdf';
@@ -169,19 +182,18 @@ class ArticuloController extends Controller {
 				'success' => false,
 				'message' => 'No existen articulos registrados',
 			], 404);
-			//  return view('articulos.articulo',array('articulos' => $articulos));
-		} catch (\Exception$ex) {
+		} catch (\Exception $ex) {
 			return response()->json([
 				'success' => false,
 				'message' => $ex->getMessage(),
 			], 404);
 		}
 	}
-	public function articulosOptions(Request $request) {
+	public function articulosOptions(Request $request)
+	{
 		try {
-			// return Responsable::with('usuario')->with('servicio')->get();
 			return new ArticulosOptionsCollection(Articulo::where('asignado', false)->get());
-		} catch (\Exception$ex) {
+		} catch (\Exception $ex) {
 			return response()->json([
 				'success' => false,
 				'message' => $ex->getMessage(),

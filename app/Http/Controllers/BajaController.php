@@ -9,6 +9,7 @@ use App\Models\Responsable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\ArchivosDetalleBaja;
+use Illuminate\Support\Facades\Log;
 use App\Http\Resources\Baja\BajaResource;
 use App\Http\Resources\Baja\BajaCollection;
 use App\Http\Resources\Baja\BajaArticuloCollection;
@@ -49,7 +50,7 @@ class BajaController extends Controller
 
         try {
             DB::beginTransaction();
-            $usuario_id = auth()->user()->idUsuario;
+            $usuario      = auth()->user();
             $datos     = json_decode($request['data'], true);
             $folder = 'home/bajas/archivos/';
             $imageName = "";
@@ -59,7 +60,7 @@ class BajaController extends Controller
             }
             $baja       = [
                 'responsable_id' => $datos['baja']['responsable_id'],
-                'usuario_id'     => $usuario_id,
+                'usuario_id'     => $usuario->idUsuario,
             ];
             $last_baja_id = Baja::create($baja)->idBaja;
             $detalle_baja = [
@@ -79,6 +80,7 @@ class BajaController extends Controller
                 ]);
             }
             DB::commit();
+            Log::channel('registro_bajas')->info('data => ', ['baja' => $baja, 'detalle_baja' => $detalle_baja, 'user_login' => ['id' => $usuario->idUsuario, 'nombres' => $usuario->nombres], 'IP' => \Request::getClientIp(true)]);
             return response()->json([
                 'success' => true,
                 'message' => 'Articulo dado de Baja correctamente',

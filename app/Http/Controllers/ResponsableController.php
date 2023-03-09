@@ -1,17 +1,22 @@
 <?php
+
 namespace App\Http\Controllers;
+
 use App\Models\Usuario;
 use App\Models\Servicio;
 use App\Models\Responsable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Http\Resources\Responsable\ResponsableCollection;
 use App\Http\Requests\Responsable\ResponsableStoreRequest;
 use App\Http\Requests\Responsable\ResponsableUpdateRequest;
 use App\Http\Resources\Responsable\ResponsableOptionsCollection;
 
-class ResponsableController extends Controller {
-	public function index() {
+class ResponsableController extends Controller
+{
+	public function index()
+	{
 		try {
 			// $result = Responsable::with('asignaciones')->with('servicio')->with('usuario')->whereHas('asignaciones')->get();
 			$result = Responsable::with('servicio')->with('usuario')->get();
@@ -22,27 +27,30 @@ class ResponsableController extends Controller {
 				'success' => false,
 				'message' => 'No existen resultados',
 			], 200);
-		} catch (\Exception$ex) {
+		} catch (\Exception $ex) {
 			return response()->json([
 				'success' => false,
 				'message' => $ex->getMessage(),
 			], 404);
 		}
 	}
-	public function store(ResponsableStoreRequest $request) {
+	public function store(ResponsableStoreRequest $request)
+	{
 		try {
 			DB::beginTransaction();
+			$usuario      = auth()->user();
 			$responsable = [
 				'usuario_id'  => $request->get('usuario_id'),
 				'servicio_id' => $request->get('servicio_id'),
 			];
 			Responsable::create($responsable);
+			Log::channel('registro_responsables')->info('data => ', ['responsable' => $responsable, 'user_login' => ['id' => $usuario->idUsuario, 'nombres' => $usuario->nombres], 'IP' => \Request::getClientIp(true)]);
 			DB::commit();
 			return response()->json([
 				'success' => true,
 				'message' => 'Responsable registrado correctamente',
 			], 201);
-		} catch (\Exception$ex) {
+		} catch (\Exception $ex) {
 			DB::rollback();
 			return [
 				'success' => false,
@@ -50,7 +58,8 @@ class ResponsableController extends Controller {
 			];
 		}
 	}
-	public function show($id) {
+	public function show($id)
+	{
 		try {
 			$result = Responsable::with('servicio')->with('usuario')->where('idResponsable', $id)->first();
 			if ($result) {
@@ -64,14 +73,15 @@ class ResponsableController extends Controller {
 					'message' => 'No existen resultados',
 				], 200);
 			}
-		} catch (\Exception$ex) {
+		} catch (\Exception $ex) {
 			return response()->json([
 				'success' => false,
 				'message' => $ex->getMessage(),
 			], 404);
 		}
 	}
-	public function update(ResponsableUpdateRequest $request, $id) {
+	public function update(ResponsableUpdateRequest $request, $id)
+	{
 		try {
 			$responsable = [
 				'usuario_id'  => $request->get('usuario_id'),
@@ -88,21 +98,22 @@ class ResponsableController extends Controller {
 				'success' => false,
 				'message' => 'El Responsable No se pudo actualizar',
 			], 201);
-		} catch (\Exception$ex) {
+		} catch (\Exception $ex) {
 			return response()->json([
 				'success' => false,
 				'message' => $ex->getMessage(),
 			], 404);
 		}
 	}
-	public function destroy($id) {
+	public function destroy($id)
+	{
 		try {
 			Responsable::where('idResponsable', '=', $id)->delete();
 			return response()->json([
 				'success' => true,
 				'message' => 'Responsable eliminado correctamente',
 			], 201);
-		} catch (\Exception$ex) {
+		} catch (\Exception $ex) {
 			return response()->json([
 				'success' => false,
 				'message' => $ex->getMessage(),
@@ -114,17 +125,19 @@ class ResponsableController extends Controller {
 	 *  ------------------
 	 *
 	 */
-	public function ResponsablesOptions() {
+	public function ResponsablesOptions()
+	{
 		try {
 			return new ResponsableOptionsCollection(Responsable::with('usuario')->with('servicio')->where('condicion', true)->get());
-		} catch (\Exception$ex) {
+		} catch (\Exception $ex) {
 			return response()->json([
 				'success' => false,
 				'message' => $ex->getMessage(),
 			], 404);
 		}
 	}
-	public function Usuarios() {
+	public function Usuarios()
+	{
 		try {
 			$usuarios = Usuario::select('idUsuario AS usuario_id', DB::raw("CONCAT(IFNULL(paterno,''),' ',IFNULL(materno,''),' ',IFNULL(nombres,'')) AS nombre_completo"))->where('estado', '=', true)->get();
 			return response()->json([
@@ -138,21 +151,23 @@ class ResponsableController extends Controller {
 			], 404);
 		}
 	}
-	public function Servicios() {
+	public function Servicios()
+	{
 		try {
 			$servicios = Servicio::select('idServicio AS servicio_id', 'nombre')->where('condicion', '=', true)->get();
 			return response()->json([
 				'success' => true,
 				'data'    => $servicios,
 			], 200);
-		} catch (\Exception$ex) {
+		} catch (\Exception $ex) {
 			return response()->json([
 				'success' => false,
 				'message' => $ex->getMessage(),
 			], 404);
 		}
 	}
-	public function bajaResponsable($id) {
+	public function bajaResponsable($id)
+	{
 		try {
 			$currentStatus = Responsable::find($id);
 			$responsable   = Responsable::where('idResponsable', '=', $id)->update(['condicion' => !$currentStatus->condicion]);
@@ -167,20 +182,21 @@ class ResponsableController extends Controller {
 				'success' => false,
 				'message' => 'Registro no encontrado',
 			], 201);
-		} catch (\Exception$ex) {
+		} catch (\Exception $ex) {
 			return response()->json([
 				'success' => false,
 				'message' => $ex->getMessage(),
 			], 404);
 		}
 	}
-	public function CambiarServicios(Request $request) {
+	public function CambiarServicios(Request $request)
+	{
 		try {
 			$responsable = Responsable::find($request['responsable_id']);
-			if($responsable){
+			if ($responsable) {
 				$status      = $responsable->condicion;
 				if ($status) {
-					$responsable->update(['servicio_id'=>$request['servicio_id']]);
+					$responsable->update(['servicio_id' => $request['servicio_id']]);
 					return response()->json([
 						'success' => true,
 						'message' => 'Servicio cambiado  correctamente',
@@ -195,11 +211,12 @@ class ResponsableController extends Controller {
 				'success' => false,
 				'message' => 'El recurso solicitado no se puedo encontrar.',
 			], 201);
-		} catch (\Exception$ex) {
+		} catch (\Exception $ex) {
 			return response()->json([
 				'success' => false,
 				'message' => $ex->getMessage(),
 			], 404);
 		}
 	}
+	
 }

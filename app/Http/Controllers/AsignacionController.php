@@ -2,19 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Asignacion\AsignacionStoreRequest;
-use App\Http\Requests\Asignacion\AsignacionUpdateRequest;
-use App\Http\Resources\Asignacion\AsignacionCollection;
-use App\Http\Resources\DetalleAsignacion\DetalleAsignacionResource;
-use App\Http\Resources\Responsable\ResponsableResource;
+use Request;
 use App\Models\Articulo;
 use App\Models\Asignacion;
-use App\Models\DetalleAsignacion;
 use App\Models\Funcionario;
 use App\Models\Responsable;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
+use App\Models\DetalleAsignacion;
 use Barryvdh\DomPDF\Facade as PDF;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use App\Http\Resources\Asignacion\AsignacionCollection;
+use App\Http\Resources\Responsable\ResponsableResource;
+use App\Http\Requests\Asignacion\AsignacionStoreRequest;
+use App\Http\Requests\Asignacion\AsignacionUpdateRequest;
+use App\Http\Resources\DetalleAsignacion\DetalleAsignacionResource;
 
 
 
@@ -42,6 +44,7 @@ class AsignacionController extends Controller
 	{
 		try {
 			DB::beginTransaction();
+			$usuario      = auth()->user();
 			if ($request['asignacion_id']) {
 				$asigacion_id = $request['asignacion_id'];
 			} else {
@@ -60,6 +63,7 @@ class AsignacionController extends Controller
 				];
 				DetalleAsignacion::create($detalle_asignacion);
 				Articulo::where('idArticulo', '=', $articulo['articulo_id'])->update(['asignado' => true]);
+				Log::channel('registro_asignaciones')->info('data => ', ['asignacion' => $asignacion, 'detalle_asignacion' => $detalle_asignacion, 'user_login' => ['id' => $usuario->idUsuario, 'nombres' => $usuario->nombres], 'IP' => Request::getClientIp(true)]);
 			}
 			DB::commit();
 			return response()->json([

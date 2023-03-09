@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Http\Controllers;
+
 use App\Models\Usuario;
 use App\Mail\ResetPassword;
 use Illuminate\Http\Request;
@@ -10,9 +12,12 @@ use Illuminate\Support\Facades\Mail;
 use App\Http\Requests\UsuarioStoreRequest;
 use App\Http\Requests\UsuarioUpdateRequest;
 use App\Http\Requests\UsuarioPictureRequest;
-class UsuarioController extends Controller {
 
-	public function index() {
+class UsuarioController extends Controller
+{
+
+	public function index()
+	{
 		try {
 			$result = Usuario::select('nombres', 'idUsuario AS usuario_id', DB::raw("CONCAT(IFNULL(paterno,''),' ',IFNULL(materno,''),' ',IFNULL(nombres,'')) AS nombre_completo"), DB::raw("CONCAT(IFNULL(ci,''),' ',IFNULL(ci_ext,'')) AS cedula"), 'cargo', 'telefono', 'foto', 'estado', 'correo', 'created_at')->get();
 			if (!$result->isEmpty()) {
@@ -34,7 +39,8 @@ class UsuarioController extends Controller {
 		}
 	}
 
-	public function store(UsuarioStoreRequest $request) {
+	public function store(UsuarioStoreRequest $request)
+	{
 		try {
 			DB::beginTransaction();
 			$folder    = "/home/usuarios/fotos";
@@ -72,9 +78,10 @@ class UsuarioController extends Controller {
 			];
 		}
 	}
-	public function show($id) {
+	public function show($id)
+	{
 		try {
-			$user = Usuario::where('idUsuario', '=', $id)->select('idUsuario as usuario_id','paterno', 'materno', 'nombres', 'ci', 'ci_ext', 'cargo', 'telefono', 'direccion', 'correo', 'created_at', 'updated_at', 'foto', 'estado')->first();
+			$user = Usuario::where('idUsuario', '=', $id)->select('idUsuario as usuario_id', 'paterno', 'materno', 'nombres', 'ci', 'ci_ext', 'cargo', 'telefono', 'direccion', 'correo', 'created_at', 'updated_at', 'foto', 'estado')->first();
 			if ($user) {
 				$user->setAttribute('roles', getAllRoles($id));
 				$user->setAttribute('permisos', getAllPermissions($id));
@@ -95,7 +102,8 @@ class UsuarioController extends Controller {
 			], 404);
 		}
 	}
-	public function update(UsuarioUpdateRequest $request, $id) {
+	public function update(UsuarioUpdateRequest $request, $id)
+	{
 		try {
 			$user            = Usuario::find($id);
 			$user->paterno   = $request['paterno'];
@@ -130,9 +138,10 @@ class UsuarioController extends Controller {
 			], 404);
 		}
 	}
-	public function destroy($id) {
+	public function destroy($id)
+	{
 		try {
-			$usuario = Usuario::where('idUsuario', '=', $id)->delete();
+			$usuario = Usuario::query()->where('idUsuario', '=', $id)->delete();
 			if ($usuario) {
 				return response()->json([
 					'success' => true,
@@ -152,7 +161,8 @@ class UsuarioController extends Controller {
 	}
 	/*---------------------   CUSTOM FUNCTIONS -------------------------*/
 	#Para usuario autenticado
-	public function ChangePassword(Request $request) {
+	public function ChangePassword(Request $request)
+	{
 		try {
 			$this->validate($request, [
 				'old_password'     => 'required',
@@ -164,7 +174,7 @@ class UsuarioController extends Controller {
 				if (!\Hash::check($request->new_password, $hashedPassword)) {
 					$users           = Usuario::find(Auth::user()->idUsuario);
 					$users->password = bcrypt($request->new_password);
-					Usuario::where('idUsuario', Auth::user()->idUsuario)->update(array('password' => $users->password));
+					Usuario::query()->where('idUsuario', Auth::user()->idUsuario)->update(array('password' => $users->password));
 					return response()->json([
 						'success' => true,
 						'message' => "Contraseña actualizada exitosamente",
@@ -188,10 +198,11 @@ class UsuarioController extends Controller {
 			], 404);
 		}
 	}
-	public function VerificarCorreo(Request $request) {
+	public function VerificarCorreo(Request $request)
+	{
 		try {
 			$correo = $request['correo'];
-			$exist  = Usuario::where('correo', '=', $correo)->exists();
+			$exist  = Usuario::query()->where('correo', '=', $correo)->exists();
 			if (!$exist) {
 				return response()->json([
 					'success' => true,
@@ -209,7 +220,8 @@ class UsuarioController extends Controller {
 			], 404);
 		}
 	}
-	public function SuspendAccount(Request $request) {
+	public function SuspendAccount(Request $request)
+	{
 		try {
 			$usuario_id = $request['usuario_id'];
 			$usuario    = Usuario::find($usuario_id);
@@ -221,7 +233,7 @@ class UsuarioController extends Controller {
 						'message' => "La cuenta del usuario ya esta suspendida.",
 					], 201);
 				}
-				Usuario::where('idUsuario', $usuario_id)->update(['estado' => !$estado]);
+				Usuario::query()->where('idUsuario', $usuario_id)->update(['estado' => !$estado]);
 				return response()->json([
 					'success' => true,
 					'message' => "La cuenta del usuario fue suspendida correctamente.",
@@ -238,7 +250,8 @@ class UsuarioController extends Controller {
 			], 404);
 		}
 	}
-	public function ActivateAccount(Request $request) {
+	public function ActivateAccount(Request $request)
+	{
 		try {
 			$usuario_id = $request['usuario_id'];
 			$usuario    = Usuario::find($usuario_id);
@@ -250,7 +263,7 @@ class UsuarioController extends Controller {
 						'message' => "La cuenta del usuario ya esta Activa.",
 					], 201);
 				}
-				Usuario::where('idUsuario', $usuario_id)->update(['estado' => !$estado]);
+				Usuario::query()->where('idUsuario', $usuario_id)->update(['estado' => !$estado]);
 				return response()->json([
 					'success' => true,
 					'message' => "La cuenta del usuario fue Activada correctamente.",
@@ -268,7 +281,8 @@ class UsuarioController extends Controller {
 		}
 	}
 	# Cambiar imagen actual del usuario o establecer una nueva imagen
-	public function ChangeUserPicture(UsuarioPictureRequest $request) {
+	public function ChangeUserPicture(UsuarioPictureRequest $request)
+	{
 		try {
 			DB::beginTransaction();
 			$usuario_id   = $request->usuario_id;
@@ -276,7 +290,7 @@ class UsuarioController extends Controller {
 			$old_filename = Usuario::find($usuario_id)->foto;
 			$new_filename = storeImage($request['foto'], $folder);
 			if ($new_filename) {
-				$update_result = Usuario::where('idUsuario', '=', $usuario_id)->update(['foto' => $new_filename]);
+				$update_result = Usuario::query()->where('idUsuario', '=', $usuario_id)->update(['foto' => $new_filename]);
 				deleteImage($folder, $old_filename);
 				DB::commit();
 				return response()->json([
@@ -292,12 +306,13 @@ class UsuarioController extends Controller {
 			], 404);
 		}
 	}
-	public function DeleteImageUser($id) {
+	public function DeleteImageUser($id)
+	{
 		try {
 			$old_filename = Usuario::find($id)->foto;
 			if ($old_filename) {
 				$delete = deleteImage("usuarios", $old_filename);
-				Usuario::where('idUsuario', $id)->update(['foto' => ""]);
+				Usuario::query()->where('idUsuario', $id)->update(['foto' => ""]);
 				return response()->json([
 					'success' => true,
 					'message' => "Imagen eliminada correctamente",
@@ -315,7 +330,8 @@ class UsuarioController extends Controller {
 			], 404);
 		}
 	}
-	public function SetTheme(Request $request) {
+	public function SetTheme(Request $request)
+	{
 
 		try {
 			$id                              = auth()->user()->idUsuario;
@@ -323,7 +339,7 @@ class UsuarioController extends Controller {
 			$theme                           = json_decode(json_encode($usuario), true);
 
 			$theme['settings']['dark_theme'] = $request['dark_theme'];
-			Usuario::where('idUsuario', '=', $id)->update(['settings' => json_encode($theme['settings'])]);
+			Usuario::query()->where('idUsuario', '=', $id)->update(['settings' => json_encode($theme['settings'])]);
 			return response()->json([
 				'success' => true,
 				'message' => "Color de tema actualizado",
@@ -335,5 +351,4 @@ class UsuarioController extends Controller {
 			], 404);
 		}
 	}
-
 }
