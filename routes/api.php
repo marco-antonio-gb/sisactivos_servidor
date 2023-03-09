@@ -74,4 +74,5 @@ Route::group(['middleware' => ['jwt.verify', 'cors']], function () {
 	Route::get('inicio-info', 'InfoInicioController@InfoInicio');
 	#LOG FILES
 	Route::get('get-log-files', 'LogController@getLogFile');
+	Route::get('download-logfile/{folder}', 'LogController@DownloadLogFile');
 });
