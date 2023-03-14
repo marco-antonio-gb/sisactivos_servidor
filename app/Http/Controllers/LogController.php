@@ -3,12 +3,10 @@
 namespace App\Http\Controllers;
 
 use File;
-
 use ZipArchive;
 
 class LogController extends Controller
 {
-
 	public function parseLog($log_folder)
 	{
 		$path          = public_path('/home/logs/' . strtolower($log_folder));
@@ -18,17 +16,14 @@ class LogController extends Controller
 			$logCollection[] = $file->getFilename();
 		}
 		$total = count($logCollection);
-		$slice_array = array_slice($logCollection, -5);
+		$slice_array = array_slice($logCollection, -3);
 		return [
 			'total' => $total,
-			'remaining' => $total - count($slice_array),
 			'log_list' => $slice_array
 		];
 	}
-
 	public function getLogFile()
 	{
-
 		return response()->json([
 			'login'          => $this->parseLog('login'),
 			'responsables'   => $this->parseLog('responsables'),
@@ -37,13 +32,12 @@ class LogController extends Controller
 			'asignaciones'   => $this->parseLog('asignaciones'),
 			'bajas'          => $this->parseLog('bajas'),
 			'transferencias' => $this->parseLog('transferencias'),
+			'password_reset' => $this->parseLog('password_reset'),
 		], 200);
 	}
-
 	public function DownloadLogFile($folder)
 	{
 		$zip = new ZipArchive;
-
 		$fileName = $folder . '.zip';
 		$path          = public_path('/home/logs/' . strtolower($folder));
 		if (File::isDirectory($path)) {
@@ -57,7 +51,7 @@ class LogController extends Controller
 					}
 					$zip->close();
 				}
-				return response()->download(public_path($fileName));
+				return response()->download(public_path($fileName))->deleteFileAfterSend(true);
 			}
 			return response()->json([
 				'success' => false,

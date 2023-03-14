@@ -12,29 +12,29 @@ $GLOBALS['usuario'] = 'Impreso: ';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <link rel="stylesheet" href="{{ asset('/css/pdf.css') }}" media="all" />
-    <title>Reporte Articulos</title>
+    <title>Reporte baja</title>
 </head>
 
 <body>
     <script type="text/php">
         if (isset($pdf)) {
-            $color = array(0.476, 0.476, 0.476);
-            $text = "Página {PAGE_NUM} de {PAGE_COUNT}";
-            $size = 8;
-            $font = $fontMetrics->getFont("sans-serif" );
-            $width = $fontMetrics->get_text_width($text, $font, $size) / 2;
-            $x = ($pdf->get_width() - $width) - 20;
-            $y = $pdf->get_height() - 40;
-            $pdf->page_text($x, $y, $text, $font, $size,$color);
-            $text2 =$GLOBALS["usuario"].''. date('d/m/Y h:i:s a');
-            $width = $fontMetrics->get_text_width($text2, $font, $size) / 2;
-            $x2 = ($pdf->get_width() - $width) - ($pdf->get_width()-105);
-            $y2 = $pdf->get_height() - 40;
-            $pdf->page_text($x2, $y2, $text2, $font, $size,$color);
-            $x3 = ($pdf->get_width() - $width) /2;
-            {{-- $pdf->page_text($x3, $y, $GLOBALS["usuario"], $font, $size, $color); --}}
-        }
-    </script>
+$color = array(0.476, 0.476, 0.476);
+$text = "Página {PAGE_NUM} de {PAGE_COUNT}";
+$size = 8;
+$font = $fontMetrics->getFont("sans-serif" );
+$width = $fontMetrics->get_text_width($text, $font, $size) / 2;
+$x = ($pdf->get_width() - $width) - 20;
+$y = $pdf->get_height() - 40;
+$pdf->page_text($x, $y, $text, $font, $size,$color);
+$text2 =$GLOBALS["usuario"].''. date('d/m/Y h:i:s a');
+$width = $fontMetrics->get_text_width($text2, $font, $size) / 2;
+$x2 = ($pdf->get_width() - $width) - ($pdf->get_width()-105);
+$y2 = $pdf->get_height() - 40;
+$pdf->page_text($x2, $y2, $text2, $font, $size,$color);
+$x3 = ($pdf->get_width() - $width) /2;
+{{-- $pdf->page_text($x3, $y, $GLOBALS["usuario"], $font, $size, $color); --}}
+}
+</script>
     {{-- TITULO FORMULARIO --}}
     <table width="100%">
         <tr style="border: none !important;">
@@ -43,12 +43,11 @@ $GLOBALS['usuario'] = 'Impreso: ';
             </td>
             <td style="border: none !important;" width="33%">
                 <div class="text-center">
-                    <p class="titulo    m-1">ASIGNACION INDIVIDUAL DE BIENES</p>
-
+                    <p class="titulo    m-1">REPORTE BAJA ARTICULO</p>
                 </div>
             </td>
             <td style="border: none !important;text-align:right;" width="33%">
-                <p class="m-1">FECHA: {{ strtoupper($datos['creado']) }}</p>
+                <p class="m-1">FECHA: {{ strtoupper($datos['baja']['creado']) }}</p>
             </td>
         </tr>
     </table>
@@ -65,7 +64,7 @@ $GLOBALS['usuario'] = 'Impreso: ';
                     <span>UNIDAD:</span>
                 </th>
                 <th style="border: none !important;" class="text-left">
-                    <span>{{ $datos['unidad'] }}</span>
+                    <span>{{ $datos['servicio']['nombre'] }}</span>
                 </th>
             </tr>
             <tr>
@@ -84,7 +83,6 @@ $GLOBALS['usuario'] = 'Impreso: ';
                 <td style="border: none !important;">
                     <span>{{ $datos['responsable']['cedula'] }}</span>
                 </td>
-
             </tr>
             <tr>
                 <td style="border: none !important;">
@@ -93,62 +91,40 @@ $GLOBALS['usuario'] = 'Impreso: ';
                 <td style="border: none !important;">
                     <span>{{ $datos['responsable']['cargo'] }}</span>
                 </td>
-
             </tr>
             <tr>
                 <td style="border: none !important;">
                     <strong>OFICINA:</strong>
                 </td>
                 <td style="border: none !important;">
-                    <span>{{ $datos['unidad'] }}</span>
+                    <span>{{ $datos['servicio']['nombre'] }}</span>
                 </td>
             </tr>
         </table>
     </div>
-    @if (count($datos['detalle_asignacion']) > 0)
-        <table class=" mt-1" width="100%">
-            <tr>
-                <td class="text-center cell-title" width="115px">CODIGO</td>
-                <td class="text-center cell-title">UNIDAD</td>
-                <td class="text-center cell-title">DESCRIPCION / DETALLE</td>
-                <td class="text-center cell-title" width="30px">ESTADO</td>
-            </tr>
-            @foreach ($datos['detalle_asignacion'] as $detalle)
-                <tr>
-                    <td class="text-center">{{ $detalle->articulo->codigo }}</td>
-                    <td class="text-center">{{ $detalle->articulo->unidad }}</td>
-                    <td>{{ $detalle->articulo->descripcion }} <br> <strong>DETALLE: {{ $detalle->detalle }}</strong>
-                    </td>
-                    <td style="text-transform: uppercase;">{{ $detalle->articulo->estado }}</td>
-                </tr>
-            @endforeach
-        </table>
-        <strong>Cantidad: {{ count($datos['detalle_asignacion']) }} Items</strong>
-    @else
-        <div class="text-center">
-            <h1>* ERROR *</h1>
-            <p>No se pudo cargar la informacion de la Asignacion</p>
-        </div>
-    @endif
-    <div style="font-size: 10pt !important;margin-top:15px;text-align:justify;">
-        <p>El servidor publico queda prohibido de usar o permitir el uso de los bienes para beneficio particular o
-            privado, prestar o transferir el bien a otro empleado publico, dañar o averiar sus caracteristicas fisicas o
-            tecnicas, poner en riesgo el bien, ingresar o sacar bienes particulares sin autorizacion de la Unidad o
-            Responsable de Activos Fijos.</p>
-        <p>La no obediencia a estas prohibiciones generara responsabilidades establecidas en la Ley Nro. 1178 y sus
-            reglamentos.</p>
-        <p>En señal de conformidad y aceptacion se firma el siguiente acta.</p>
+    <div>
+        <strong>Articulo</strong>
+        <p>Articulo: {{ $datos['articulo']['nombre'] }} ({{ $datos['articulo']['codigo'] }})</h1>
+        <p>Descripcion: {{ $datos['articulo']['descripcion'] }}</p>
+        <p>Fecha registro: {{ $datos['articulo']['fecha_registro'] }}</p>
+        <br>
+        <br>
+        <strong>Detalle baja</strong>
+        <p>Motivo: {{ $datos['detalle_baja']['motivo'] }}</p>
+        <p>Informe baja: {{ $datos['detalle_baja']['informebaja'] }}</p>
+        <p>Fecha: {{ $datos['detalle_baja']['fecha_hora'] }}</p>
+        <br>
+        <br>
+        <strong>Responsable</strong>
+        <p>Nombre: {{ $datos['responsable']['nombre_completo'] }} ({{ $datos['responsable']['cedula'] }})</p>
+        <p>Cargo : {{ $datos['responsable']['cargo'] }}</p>
+        <br>
+        <br>
+        <strong>Usuario</strong>
+        <p>Nombre: {{ $datos['usuario']['nombre_completo'] }}</p>
+        <p>Cargo: {{ $datos['usuario']['cargo'] }}</p>
     </div>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <table class="text-center no-border ">
+    {{-- <table class="text-center no-border ">
         <tr>
             <td class="no-border ">
                 <strong>{{$datos['responsable_activos']}}</strong>
@@ -163,8 +139,7 @@ $GLOBALS['usuario'] = 'Impreso: ';
                 <p>RECIBI CONFORME</p>
             </td>
         </tr>
-    </table>
-
+    </table> --}}
 </body>
 
 </html>

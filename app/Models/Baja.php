@@ -25,7 +25,7 @@ class Baja extends Model
 	}
 	public function responsable()
 	{
-		return $this->BelongsTo(Responsable::class, 'responsable_id', 'idResponsable');
+		return $this->BelongsTo(Responsable::class, 'responsable_id', 'idResponsable')->with('servicio');
 	}
 
 	public function usuario()

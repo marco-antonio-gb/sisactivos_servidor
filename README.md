@@ -75,6 +75,34 @@ php artisan vendor:publish --provider="Tymon\JWTAuth\Providers\LaravelServicePro
 php artisan jwt:secret
 ```
 
+8. Crear las carpetas para los archivos del sistema
+
+```
+public_html/home
+
+-articulos
+	* fotos
+	* reportes
+-asignaciones
+	* fotos
+	* reportes
+-bajas
+	* fotos
+	* reportes
+-usuarios
+	* fotos
+	* reportes
+-logs
+	* articulos
+	* asignaciones
+	* bajas
+	* login
+	* password_reset
+	* responsables
+	* transferencias
+	* usuarios
+```
+
 8. Ejecutar las migraciones para las tablas de Roles, Permisos y Usuarios.
 
 ```

@@ -81,7 +81,7 @@ class UsuarioController extends Controller
 	public function show($id)
 	{
 		try {
-			$user = Usuario::where('idUsuario', '=', $id)->select('idUsuario as usuario_id', 'paterno', 'materno', 'nombres', 'ci', 'ci_ext', 'cargo', 'telefono', 'direccion', 'correo', 'created_at', 'updated_at', 'foto', 'estado')->first();
+			$user = Usuario::query()->where('idUsuario', '=', $id)->select('idUsuario as usuario_id', 'paterno', 'materno', 'nombres', 'ci', 'ci_ext', 'cargo', 'telefono', 'direccion', 'correo', 'created_at', 'updated_at', 'foto', 'estado')->first();
 			if ($user) {
 				$user->setAttribute('roles', getAllRoles($id));
 				$user->setAttribute('permisos', getAllPermissions($id));

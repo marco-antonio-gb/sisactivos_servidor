@@ -12,6 +12,8 @@ use App\Http\Resources\Responsable\ResponsableCollection;
 use App\Http\Requests\Responsable\ResponsableStoreRequest;
 use App\Http\Requests\Responsable\ResponsableUpdateRequest;
 use App\Http\Resources\Responsable\ResponsableOptionsCollection;
+use App\Http\Resources\Responsable\UsuariosOptionCollection;
+use App\Http\Resources\Responsable\UsuariosOptionResource;
 
 class ResponsableController extends Controller
 {
@@ -139,11 +141,8 @@ class ResponsableController extends Controller
 	public function Usuarios()
 	{
 		try {
-			$usuarios = Usuario::select('idUsuario AS usuario_id', DB::raw("CONCAT(IFNULL(paterno,''),' ',IFNULL(materno,''),' ',IFNULL(nombres,'')) AS nombre_completo"))->where('estado', '=', true)->get();
-			return response()->json([
-				'success' => true,
-				'data'    => $usuarios,
-			], 200);
+			$usuarios = Usuario::query()->where('estado', '=', true)->doesnthave('responsable')->get();
+			return new UsuariosOptionCollection($usuarios);
 		} catch (\Exception $ex) {
 			return response()->json([
 				'success' => false,
@@ -218,5 +217,4 @@ class ResponsableController extends Controller
 			], 404);
 		}
 	}
-	
 }

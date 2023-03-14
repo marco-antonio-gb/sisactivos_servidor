@@ -6,13 +6,15 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class TransferenciaStoreRequest extends FormRequest {
+class TransferenciaStoreRequest extends FormRequest
+{
 	/**
 	 * Determine if the user is authorized to make this request.
 	 *
 	 * @return bool
 	 */
-	public function authorize() {
+	public function authorize()
+	{
 		return true;
 	}
 
@@ -21,14 +23,17 @@ class TransferenciaStoreRequest extends FormRequest {
 	 *
 	 * @return array
 	 */
-	public function rules() {
+	public function rules()
+	{
 		return [
-			'responsable_id' => 'required',
-			'usuario_id'     => 'required'
+			'transferencia.responsable_id'      => 'required',
+			'detalle_transferencia.articulo_id' => 'required',
+			'detalle_transferencia.detalle'     => 'required',
 		];
 	}
 
-	protected function failedValidation(Validator $validator) {
+	protected function _failedValidation(Validator $validator)
+	{
 		$erros = $validator->errors()->toArray();
 		throw new HttpResponseException(response()->json([
 			'success' => false,

@@ -2,17 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Baja;
+use App\Http\Resources\Baja\BajaArticuloCollection;
+use App\Http\Resources\Baja\BajaCollection;
+use App\Http\Resources\Baja\BajaResource;
+use App\Models\ArchivosDetalleBaja;
 use App\Models\Articulo;
+use App\Models\Baja;
 use App\Models\DetalleBaja;
 use App\Models\Responsable;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use App\Models\ArchivosDetalleBaja;
 use Illuminate\Support\Facades\Log;
-use App\Http\Resources\Baja\BajaResource;
-use App\Http\Resources\Baja\BajaCollection;
-use App\Http\Resources\Baja\BajaArticuloCollection;
+use PDF;
 
 class BajaController extends Controller
 {
@@ -47,18 +49,16 @@ class BajaController extends Controller
      */
     public function store(Request $request)
     {
-
         try {
             DB::beginTransaction();
-            $usuario      = auth()->user();
+            $usuario   = auth()->user();
             $datos     = json_decode($request['data'], true);
-            $folder = 'home/bajas/archivos/';
+            $folder    = 'home/bajas/archivos/';
             $imageName = "";
             if ($request->hasFile('archivo')) {
-
                 $imageName = storageAnotherFile($request['archivo'], $folder);
             }
-            $baja       = [
+            $baja = [
                 'responsable_id' => $datos['baja']['responsable_id'],
                 'usuario_id'     => $usuario->idUsuario,
             ];
@@ -72,11 +72,10 @@ class BajaController extends Controller
             DetalleBaja::create($detalle_baja);
             Articulo::where('idArticulo', '=', $datos['detalle_baja']['articulo_id'])->update(['estado' => 'Malo', 'baja' => true]);
             if ($last_baja_id) {
-
                 ArchivosDetalleBaja::create([
-                    'nombre' => $imageName,
-                    'url' => $folder . $imageName,
-                    'detallebaja_id' => $last_baja_id
+                    'nombre'         => $imageName,
+                    'url'            => $folder . $imageName,
+                    'detallebaja_id' => $last_baja_id,
                 ]);
             }
             DB::commit();
@@ -104,7 +103,6 @@ class BajaController extends Controller
     {
         try {
             $result = Baja::where('idBaja', $id)->with('usuario')->with('responsable')->with('detalle_baja')->first();
-
             if ($result) {
                 return new BajaResource($result);
             } else {
@@ -188,50 +186,49 @@ class BajaController extends Controller
     public function BajaReporte($idBaja)
     {
         try {
-
             $result = Baja::where('idBaja', $idBaja)->with('usuario')->with('responsable')->with('detalle_baja')->first();
-            return $result;
             if ($result) {
-
-
                 $printData = [
-                    'baja' => [
+                    'baja'         => [
                         'baja_id' => $idBaja,
-                        'creado' => Carbon::parse($result->detalle_baja->created_at, 'America/La_Paz')->translatedFormat('l, j \d\e F \d\e\l Y, H:i:s'),
+                        'creado'  => Carbon::parse($result->detalle_baja->created_at, 'America/La_Paz')->translatedFormat('l, j \d\e F \d\e\l Y, H:i:s'),
                     ],
-                    'articulo' => [
-                        'articulo_id' => $result->detalle_baja->articulo->idArticulo,
-                        'nombre' => $result->detalle_baja->articulo->nombre,
-                        'codigo' => $result->detalle_baja->articulo->codigo,
-                        'descripcion' => $result->detalle_baja->articulo->descripcion,
+                    'articulo'     => [
+                        'articulo_id'    => $result->detalle_baja->articulo->idArticulo,
+                        'nombre'         => $result->detalle_baja->articulo->nombre,
+                        'codigo'         => $result->detalle_baja->articulo->codigo,
+                        'descripcion'    => $result->detalle_baja->articulo->descripcion,
                         'fecha_registro' => Carbon::parse($result->detalle_baja->articulo->created_at, 'America/La_Paz')->translatedFormat('l, j \d\e F \d\e\l Y, H:i:s'),
-                        'imagen' => $result->detalle_baja->articulo->archivo->url,
+                        'imagen'         => $result->detalle_baja->articulo->archivo->url,
                     ],
                     'detalle_baja' => [
                         'detallebaja_id' => $result->detalle_baja->idDetalleBaja,
-                        'motivo' => $result->detalle_baja->motivo,
-                        'informebaja' => $result->detalle_baja->informebaja,
-                        'fecha_hora' => Carbon::parse($result->detalle_baja->created_at, 'America/La_Paz')->translatedFormat('l, j \d\e F \d\e\l Y, H:i:s'),
-                        'archivo_baja' => $result->detalle_baja->archivo_detalle->url
-
+                        'motivo'         => $result->detalle_baja->motivo,
+                        'informebaja'    => $result->detalle_baja->informebaja,
+                        'fecha_hora'     => Carbon::parse($result->detalle_baja->created_at, 'America/La_Paz')->translatedFormat('l, j \d\e F \d\e\l Y, H:i:s'),
+                        'archivo_baja'   => $result->detalle_baja->archivo_detalle->url,
                     ],
-                    'usuario'               => [
+                    'usuario'      => [
                         'usuario_id'      => $result->usuario->idUsuario,
                         'nombre_completo' => $result->usuario->paterno . ' ' . $result->usuario->materno . ' ' . $result->usuario->nombres,
                         'cargo'           => $result->usuario->cargo,
                         'estado'          => $result->usuario->estado,
                     ],
-                    'responsable'           => [
+                    'responsable'  => [
                         'responsable_id'  => $result->responsable->idResponsable,
                         'nombre_completo' => $result->responsable->usuario->paterno . ' ' . $result->responsable->usuario->materno . ' ' . $result->responsable->usuario->nombres,
                         'cargo'           => $result->responsable->usuario->cargo,
+                        'cedula'          => $result->responsable->usuario->ci,
                         'estado'          => $result->responsable->usuario->estado,
+                    ],
+                    'servicio'     => [
+                        'nombre' => $result->responsable->servicio->nombre,
                     ],
                 ];
                 $time         = time();
                 $fileName     = 'Reporte baja de Articulo - ' . $time . '-' . slugify($printData['articulo']['nombre']) . '.pdf';
                 $pdf          = PDF::loadView('bajas.reporte_baja', array('datos' => $printData))->setPaper('letter', 'landscape');
-                $originalPath = '/home/asignaciones/reportes/';
+                $originalPath = '/home/bajas/reportes/';
                 $urlFile      = public_path() . $originalPath;
                 $pdf->save($urlFile . $fileName);
                 return $pdf->stream($fileName);

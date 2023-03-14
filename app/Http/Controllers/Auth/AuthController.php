@@ -98,8 +98,16 @@ class AuthController extends Controller
 	 */
 	public function logout()
 	{
+		$user = auth()->user();
+		$infoUser = "";
+		if ($user) {
+			$infoUser = [
+				'id' => $user->idUsuario,
+				'nombre' => $user->nombres . ' ' . $user->paterno . ' ' . $user->materno,
+			];
+		}
+		Log::channel('login_usuarios')->info('data => ', ['LogOut' => $infoUser, 'IP' => \Request::getClientIp(true)]);
 		auth()->logout();
-		Log::channel('login_usuarios')->info('data => ', ['LogOut' => auth()->user(), 'IP' => \Request::getClientIp(true)]);
 		return response()->json(['success' => true, 'message' => 'Su sesion se ha cerrado']);
 	}
 	/**

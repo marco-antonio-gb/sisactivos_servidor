@@ -72,4 +72,8 @@ class Usuario extends Authenticatable implements JWTSubject
 	{
 		return $this->nombres . ' ' . $this->paterno . ' ' . $this->materno;
 	}
+	public function responsable()
+	{
+		return $this->hasOne(Responsable::class, "usuario_id", "idUsuario");
+	}
 }
