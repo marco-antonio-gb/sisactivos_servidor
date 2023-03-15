@@ -16,10 +16,10 @@ class DatabaseSeeder extends Seeder
         $this->call(RolesTableSeeder::class);
         $this->call(RolSyncPermissionSeeder::class);
         $this->call(CreateAdminUserSeeder::class);
-        $this->call(CategoriaSeeder::class);
-        $this->call(OrgFinancierosSeeder::class);
-        $this->call(ServicioSeeder::class);
-        $this->call(ArticuloSeeder::class);
-        $this->call(FuncionarioSeeder::class);
+        // $this->call(CategoriaSeeder::class);
+        // $this->call(OrgFinancierosSeeder::class);
+        // $this->call(ServicioSeeder::class);
+        // $this->call(ArticuloSeeder::class);
+        // $this->call(FuncionarioSeeder::class);
     }
 }

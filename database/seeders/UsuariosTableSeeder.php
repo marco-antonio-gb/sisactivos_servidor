@@ -20,7 +20,7 @@ class UsuariosTableSeeder extends Seeder {
 			"settings"  => '{"dark_theme": false}',
 
 		]);
-        Usuario::factory()->count(6)->create();
+        // Usuario::factory()->count(6)->create();
 
 	}
 }
